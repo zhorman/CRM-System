@@ -1,32 +1,21 @@
 import { useState } from 'react';
 import UserInput from './components/UserInput';
 import TaskList from './components/TaskList';
-import { postData } from './api';
+import styles from './styles/App.module.css';
 
 function App() {
-  const [addedTask, setAddedTask] = useState();
-
-  function  handleAddTask(taskName) {
-     setAddedTask( postData({ title: taskName, isDone: false }));
-    return addedTask;
-  }
-
-  // function handleEditTask() {}
-
-  // function handleRemoveTask(id) {
-  //   setTasks(tasks.filter((task) => task.id !== id));
-  // }
+  const [renderCount, setRenderCount] = useState(0);
 
   return (
-    <>
+    <div className={styles.container}>
       <header>
         <h1>Todolist</h1>
       </header>
       <main>
-        <UserInput onAddClick={handleAddTask} />
-        <TaskList addedTask={addedTask} />
+        <UserInput onAddTaskRender={setRenderCount} />
+        <TaskList tasksUpdated={renderCount} updateRenderCount={setRenderCount} />
       </main>
-    </>
+    </div>
   );
 }
 

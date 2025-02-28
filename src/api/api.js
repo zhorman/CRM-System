@@ -12,7 +12,7 @@ export async function postData(data) {
       throw new Error(`Ошибка ${response.status}: ${returnedData}`);
     }
 
-    const returnedData = await response.json(); // Читаем ответ
+    const returnedData = await response.json();
 
     console.log('Ответ сервера:', returnedData);
     return returnedData;
@@ -25,13 +25,12 @@ export async function getData(param) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos?filter=${param}`);
 
-    const { data } = await response.json(); // Читаем ответ
+    const { data } = await response.json();
 
     if (!response.ok) {
       throw new Error(`Ошибка ${response.status}: ${data}`);
     }
 
-    // console.log('Ответ сервера:', data);
     return data;
   } catch (error) {
     console.error('Ошибка:', error);
@@ -55,13 +54,12 @@ export async function deleteData(id) {
   }
 }
 
-
 export async function updateData(id, updatedData) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(updatedData),
     });
@@ -73,7 +71,7 @@ export async function updateData(id, updatedData) {
 
     return await response.json();
   } catch (error) {
-    console.error("Ошибка при обновлении:", error.message);
+    console.error('Ошибка при обновлении:', error.message);
     return null;
   }
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { postData } from '../api';
+import { postData } from '../api/api.js';
 import styles from '../styles/UserInput.module.css';
 
 export default function UserInput({ onAddTaskRender }) {

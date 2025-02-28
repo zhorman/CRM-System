@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { useState } from 'react';
-import { updateData, deleteData } from '../api';
+import { updateData, deleteData } from '../api/api.js';
 import styles from '../styles/TaskItem.module.css';
 
 export default function TaskItem({ task, updateRenderCount }) {

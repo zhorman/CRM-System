@@ -1,17 +1,13 @@
-import { getTasks } from '../../api/api.js';
 import styles from './FilterTabs.module.css';
 
 export default function FilterTabs({
-  setTasksList,
   activeFilter,
   setActiveFilter,
+  allTasksCount,
   inWorkTasksCount,
   completedTasksCount,
 }) {
   async function loadTasks(query) {
-    const data = await getTasks(query);
-    const tasks = data.data;
-    setTasksList(tasks);
     setActiveFilter(query);
   }
 
@@ -20,7 +16,7 @@ export default function FilterTabs({
       <button
         className={activeFilter === 'all' ? styles.activeTab : styles.tabButton}
         onClick={() => loadTasks('all')}>
-        Все({inWorkTasksCount + completedTasksCount})
+        Все({allTasksCount})
       </button>
       <button
         className={activeFilter === 'inWork' ? styles.activeTab : styles.tabButton}

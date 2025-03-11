@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createTask } from '../../api/api.js';
 import styles from './CreateTaskForm.module.css';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constans.js';
+import {generateError} from '../../utils/helpers.js'
 
 export default function CreateTaskForm({ fetchTasks }) {
   const [taskName, setTaskName] = useState('');
@@ -10,31 +11,19 @@ export default function CreateTaskForm({ fetchTasks }) {
   function handleChange(event) {
     const value = event.target.value;
 
-    if (value.length > MAX_TASK_LENGTH) {
-      setError(`Максимальная длина: ${MAX_TASK_LENGTH} символов.`);
-      return;
-    }
+    const trimmedValue = value.trim();
+    const validationError = generateError(trimmedValue);
 
-    if (value.length < MIN_TASK_LENGTH) {
-      setError(`Минимальная длина: ${MIN_TASK_LENGTH} символа.`);
+    if (validationError) {
+      setError(validationError);
     } else {
       setError('');
     }
-
     setTaskName(value);
   }
 
   async function handleAddTask(event) {
     event.preventDefault();
-
-    if (!taskName.trim()) {
-      setError('Задача не может быть пустой');
-      return;
-    }
-
-    if (error || taskName.length < MIN_TASK_LENGTH) {
-      return;
-    }
 
     await createTask({ title: taskName, isDone: false });
     fetchTasks();
@@ -49,12 +38,10 @@ export default function CreateTaskForm({ fetchTasks }) {
         onChange={handleChange}
         required
         minLength={MIN_TASK_LENGTH}
+        maxLength={MAX_TASK_LENGTH}
         placeholder="Task To Be Done..."
       />
-      <button
-        className={styles.button}
-        type="submit"
-        disabled={error || taskName.length < MIN_TASK_LENGTH}>
+      <button className={styles.button} type="submit" disabled={error}>
         Add
       </button>
       {error && <p className={styles.error}>{error}</p>}

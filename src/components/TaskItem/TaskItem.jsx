@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { updateTask, deleteTask } from '../../api/api.js';
 import styles from './TaskItem.module.css';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constans.js';
+import { generateError } from '../../utils/helpers.js';
 
 export default function TaskItem({ task, fetchTasks }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -10,27 +11,11 @@ export default function TaskItem({ task, fetchTasks }) {
   const [isChecked, setIsChecked] = useState(task.isDone);
   const [error, setError] = useState('');
 
-  function validateTaskText(text) {
-    if (!text.trim()) {
-      return 'Задача не может быть пустой';
-    }
-
-    if (text.length < MIN_TASK_LENGTH) {
-      return `Минимальная длина: ${MIN_TASK_LENGTH} символа.`;
-    }
-
-    if (text.length > MAX_TASK_LENGTH) {
-      return `Максимальная длина: ${MAX_TASK_LENGTH} символов.`;
-    }
-
-    return '';
-  }
-
   async function handleSubmitForm(event) {
     event.preventDefault();
 
     const trimmedValue = taskItemName.trim();
-    const validationError = validateTaskText(trimmedValue);
+    const validationError = generateError(trimmedValue);
 
     if (validationError) {
       setError(validationError);
@@ -62,7 +47,7 @@ export default function TaskItem({ task, fetchTasks }) {
     const value = event.target.value;
     setTaskItemName(value);
 
-    const validationError = validateTaskText(value);
+    const validationError = generateError(value);
     setError(validationError);
   }
 
@@ -90,6 +75,8 @@ export default function TaskItem({ task, fetchTasks }) {
                 value={taskItemName}
                 onChange={handleChange}
                 autoFocus
+                minLength={MIN_TASK_LENGTH}
+                maxLength={MAX_TASK_LENGTH}
               />
               {error && <div className={styles.errorMessage}>{error}</div>}
             </div>

@@ -6,22 +6,23 @@ import { getTasks } from '../api/api';
 
 export default function TodoListPage() {
   const [tasksList, setTasksList] = useState([]);
-  const [activeFilter, setActiveFilter] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [allTasksCount, setAllTasksCount] = useState('');
   const [inWorkTasksCount, setInWorkTasksCount] = useState('');
   const [completedTasksCount, setCompletedTasksCount] = useState('');
 
   async function fetchTasks() {
-    const data = await getTasks('all');
+    const data = await getTasks(activeFilter);
     setTasksList(data.data);
+    setAllTasksCount(data.info.all);
     setInWorkTasksCount(data.info.inWork);
     setCompletedTasksCount(data.info.completed);
-    setActiveFilter('all');
   }
 
   useEffect(() => {
     console.log('Компонент монтируется');
-    fetchTasks();
-  }, []);
+    fetchTasks(activeFilter);
+  }, [activeFilter]);
 
   return (
     <>
@@ -31,9 +32,9 @@ export default function TodoListPage() {
       <main>
         <CreateTaskForm fetchTasks={fetchTasks} />
         <FilterTabs
-          setTasksList={setTasksList}
           activeFilter={activeFilter}
           setActiveFilter={setActiveFilter}
+          allTasksCount={allTasksCount}
           inWorkTasksCount={inWorkTasksCount}
           completedTasksCount={completedTasksCount}
         />

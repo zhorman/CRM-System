@@ -1,4 +1,4 @@
-import styles from './styles/App.module.css';
+import styles from './App.module.css';
 import TodoListPage from './pages/TodoListPage';
 
 function App() {

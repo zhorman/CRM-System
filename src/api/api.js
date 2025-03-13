@@ -1,4 +1,4 @@
-export async function postData(data) {
+export async function createTask(data) {
   try {
     const response = await fetch('https://easydev.club/api/v1/todos', {
       method: 'POST',
@@ -21,11 +21,11 @@ export async function postData(data) {
   }
 }
 
-export async function getData(param) {
+export async function getTasks(param) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos?filter=${param}`);
 
-    const { data } = await response.json();
+    const data = await response.json();
 
     if (!response.ok) {
       throw new Error(`Ошибка ${response.status}: ${data}`);
@@ -37,7 +37,7 @@ export async function getData(param) {
   }
 }
 
-export async function deleteData(id) {
+export async function deleteTask(id) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
       method: 'DELETE',
@@ -54,7 +54,7 @@ export async function deleteData(id) {
   }
 }
 
-export async function updateData(id, updatedData) {
+export async function updateTask(id, updatedData) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
       method: 'PUT',

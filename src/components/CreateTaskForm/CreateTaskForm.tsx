@@ -1,18 +1,20 @@
-import { useState } from 'react';
-import { createTask } from '../../api/api.js';
+import React, { useState } from 'react';
+import { createTask } from '../../api/api.ts';
 import styles from './CreateTaskForm.module.css';
-import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constans.js';
-import {generateError} from '../../utils/helpers.js'
+import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants.ts';
+import { generateError } from '../../utils/helpers.ts';
 
-export default function CreateTaskForm({ fetchTasks }) {
+interface FetchTasksProp {
+  fetchTasks: () => void;
+}
+
+export const CreateTaskForm = ({ fetchTasks }: FetchTasksProp) => {
   const [taskName, setTaskName] = useState('');
   const [error, setError] = useState('');
 
-  function handleChange(event) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
-
-    const trimmedValue = value.trim();
-    const validationError = generateError(trimmedValue);
+    const validationError = generateError(value);
 
     if (validationError) {
       setError(validationError);
@@ -22,7 +24,7 @@ export default function CreateTaskForm({ fetchTasks }) {
     setTaskName(value);
   }
 
-  async function handleAddTask(event) {
+  async function handleAddTask(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     await createTask({ title: taskName, isDone: false });
@@ -41,10 +43,10 @@ export default function CreateTaskForm({ fetchTasks }) {
         maxLength={MAX_TASK_LENGTH}
         placeholder="Task To Be Done..."
       />
-      <button className={styles.button} type="submit" disabled={error}>
+      <button className={styles.button} type="submit" disabled={!!error}>
         Add
       </button>
       {error && <p className={styles.error}>{error}</p>}
     </form>
   );
-}
+};

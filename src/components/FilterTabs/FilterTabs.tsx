@@ -1,13 +1,20 @@
 import styles from './FilterTabs.module.css';
 
+interface FilterTabsProps {
+  activeFilter: string;
+  setActiveFilter: (query: string) => void;
+  allTasksCount: string;
+  inWorkTasksCount: string;
+  completedTasksCount: string;
+}
 export default function FilterTabs({
   activeFilter,
   setActiveFilter,
   allTasksCount,
   inWorkTasksCount,
   completedTasksCount,
-}) {
-  async function loadTasks(query) {
+}: FilterTabsProps) {
+  async function loadTasks(query: string) {
     setActiveFilter(query);
   }
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import CreateTaskForm from '../components/CreateTaskForm/CreateTaskForm';
-import TaskList from '../components/TaskList/TaskList';
-import FilterTabs from '../components/FilterTabs/FilterTabs';
-import { getTasks } from '../api/api';
+import {CreateTaskForm} from '../components/CreateTaskForm/CreateTaskForm';
+import TaskList from '../components/TaskList/TaskList.tsx';
+import FilterTabs from '../components/FilterTabs/FilterTabs.tsx';
+import { getTasks } from '../api/api.ts';
 
 export default function TodoListPage() {
   const [tasksList, setTasksList] = useState([]);
@@ -21,7 +21,7 @@ export default function TodoListPage() {
 
   useEffect(() => {
     console.log('Компонент монтируется');
-    fetchTasks(activeFilter);
+    fetchTasks();
   }, [activeFilter]);
 
   return (

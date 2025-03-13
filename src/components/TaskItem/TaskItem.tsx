@@ -1,17 +1,26 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
-import { updateTask, deleteTask } from '../../api/api.js';
+import React, { useState } from 'react';
+import { updateTask, deleteTask, TodoRequest } from '../../api/api.ts';
 import styles from './TaskItem.module.css';
-import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constans.js';
-import { generateError } from '../../utils/helpers.js';
+import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants.ts';
+import { generateError } from '../../utils/helpers.ts';
 
-export default function TaskItem({ task, fetchTasks }) {
+interface TaskItemProps {
+  task: {
+    id: string;
+    title: string;
+    isDone: boolean;
+  };
+  fetchTasks: () => void;
+}
+
+export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [taskItemName, setTaskItemName] = useState(task.title);
   const [isChecked, setIsChecked] = useState(task.isDone);
   const [error, setError] = useState('');
 
-  async function handleSubmitForm(event) {
+  async function handleSubmitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedValue = taskItemName.trim();
@@ -38,12 +47,12 @@ export default function TaskItem({ task, fetchTasks }) {
     setError('');
   }
 
-  async function handleRemoveTask(id) {
+  async function handleRemoveTask(id: string) {
     await deleteTask(id);
     fetchTasks();
   }
 
-  function handleChange(event) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
     setTaskItemName(value);
 
@@ -51,7 +60,7 @@ export default function TaskItem({ task, fetchTasks }) {
     setError(validationError);
   }
 
-  async function handleChecked(id, updatedData) {
+  async function handleChecked(id: string, updatedData: TodoRequest) {
     setIsChecked(!isChecked);
     await updateTask(id, updatedData);
     fetchTasks();
@@ -85,7 +94,7 @@ export default function TaskItem({ task, fetchTasks }) {
             <button
               type="submit"
               className={styles.buttonBlue}
-              disabled={error || !taskItemName.trim()}>
+              disabled={!!error || !taskItemName.trim()}>
               ✔️
             </button>
             <button type="button" className={styles.buttonRed} onClick={handleCancelEdit}>

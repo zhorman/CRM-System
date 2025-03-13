@@ -14,6 +14,7 @@ export const CreateTaskForm = ({ fetchTasks }: FetchTasksProp) => {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
+
     const validationError = generateError(value);
 
     if (validationError) {

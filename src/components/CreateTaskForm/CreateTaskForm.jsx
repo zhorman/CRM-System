@@ -9,10 +9,8 @@ export default function CreateTaskForm({ fetchTasks }) {
   const [error, setError] = useState('');
 
   function handleChange(event) {
-    const value = event.target.value;
-
-    const trimmedValue = value.trim();
-    const validationError = generateError(trimmedValue);
+    const value = event.target.value;    
+    const validationError = generateError(value);
 
     if (validationError) {
       setError(validationError);

@@ -1,22 +1,19 @@
 import { useState, useEffect } from 'react';
-import {CreateTaskForm} from '../components/CreateTaskForm/CreateTaskForm';
-import TaskList from '../components/TaskList/TaskList.tsx';
-import FilterTabs from '../components/FilterTabs/FilterTabs.tsx';
-import { getTasks } from '../api/api.ts';
+import { getTasks } from '../api/api';
+import { TaskCounts, TaskFilters, TaskObj } from '../types/todos';
+import CreateTaskForm from '../components/CreateTaskForm/CreateTaskForm';
+import TaskList from '../components/TaskList/TaskList';
+import FilterTabs from '../components/FilterTabs/FilterTabs';
 
 export default function TodoListPage() {
-  const [tasksList, setTasksList] = useState([]);
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [allTasksCount, setAllTasksCount] = useState('');
-  const [inWorkTasksCount, setInWorkTasksCount] = useState('');
-  const [completedTasksCount, setCompletedTasksCount] = useState('');
+  const [tasksList, setTasksList] = useState<TaskObj[]>([]);
+  const [activeFilter, setActiveFilter] = useState<TaskFilters>('all');
+  const [taskCounts, setTaskCounts] = useState<TaskCounts>({ all: 0, completed: 0, inWork: 0 });
 
   async function fetchTasks() {
     const data = await getTasks(activeFilter);
     setTasksList(data.data);
-    setAllTasksCount(data.info.all);
-    setInWorkTasksCount(data.info.inWork);
-    setCompletedTasksCount(data.info.completed);
+    setTaskCounts(data.info);
   }
 
   useEffect(() => {
@@ -32,11 +29,9 @@ export default function TodoListPage() {
       <main>
         <CreateTaskForm fetchTasks={fetchTasks} />
         <FilterTabs
+          taskCounts={taskCounts}
           activeFilter={activeFilter}
           setActiveFilter={setActiveFilter}
-          allTasksCount={allTasksCount}
-          inWorkTasksCount={inWorkTasksCount}
-          completedTasksCount={completedTasksCount}
         />
         <TaskList tasksList={tasksList} fetchTasks={fetchTasks} />
       </main>

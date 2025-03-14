@@ -1,24 +1,22 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { updateTask, deleteTask, TodoRequest } from '../../api/api.ts';
+import { updateTask, deleteTask } from '../../api/api';
+import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
+import { generateError } from '../../utils/helpers';
+import { TaskObj, TodoRequest } from '../../types/todos';
+
 import styles from './TaskItem.module.css';
-import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants.ts';
-import { generateError } from '../../utils/helpers.ts';
 
 interface TaskItemProps {
-  task: {
-    id: string;
-    title: string;
-    isDone: boolean;
-  };
+  task: TaskObj;
   fetchTasks: () => void;
 }
 
 export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [taskItemName, setTaskItemName] = useState(task.title);
-  const [isChecked, setIsChecked] = useState(task.isDone);
-  const [error, setError] = useState('');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [taskItemName, setTaskItemName] = useState<string>(task.title);
+  const [isChecked, setIsChecked] = useState<boolean>(task.isDone);
+  const [error, setError] = useState<string>('');
 
   async function handleSubmitForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,7 +45,7 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
     setError('');
   }
 
-  async function handleRemoveTask(id: string) {
+  async function handleRemoveTask(id: number) {
     await deleteTask(id);
     fetchTasks();
   }
@@ -60,7 +58,7 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
     setError(validationError);
   }
 
-  async function handleChecked(id: string, updatedData: TodoRequest) {
+  async function handleChecked(id: number, updatedData: TodoRequest) {
     setIsChecked(!isChecked);
     await updateTask(id, updatedData);
     fetchTasks();

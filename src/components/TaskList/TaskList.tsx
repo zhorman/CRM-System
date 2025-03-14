@@ -1,11 +1,7 @@
-import TaskItem from '../TaskItem/TaskItem.tsx';
-import styles from './TaskList.module.css';
+import { TaskObj } from '../../types/todos';
+import TaskItem from '../TaskItem/TaskItem';
 
-export interface TaskObj {
-  id: string;
-  title: string;
-  isDone: boolean;
-}
+import styles from './TaskList.module.css';
 
 interface TaskListProps {
   tasksList: TaskObj[];

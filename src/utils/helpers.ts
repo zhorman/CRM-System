@@ -1,4 +1,4 @@
-import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from './constants.ts';
+import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from './constants';
 
 export function generateError(text: string) {
   const trimmedText = text.trim();

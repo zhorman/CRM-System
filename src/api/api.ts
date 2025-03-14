@@ -1,16 +1,13 @@
-export interface TodoRequest {
-  title: string;
-  isDone: boolean;
-}
+import { TaskFilters, TodoRequest } from "../types/todos";
 
-export async function createTask(data: TodoRequest) {
+export async function createTask(task: TodoRequest) {
   try {
     const response = await fetch('https://easydev.club/api/v1/todos', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(task),
     });
 
     if (!response.ok) {
@@ -27,7 +24,7 @@ export async function createTask(data: TodoRequest) {
   }
 }
 
-export async function getTasks(param: string) {
+export async function getTasks(param: TaskFilters) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos?filter=${param}`);
 
@@ -43,7 +40,7 @@ export async function getTasks(param: string) {
   }
 }
 
-export async function deleteTask(id: string) {
+export async function deleteTask(id: number) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
       method: 'DELETE',
@@ -60,7 +57,7 @@ export async function deleteTask(id: string) {
   }
 }
 
-export async function updateTask(id: string, updatedTask: TodoRequest) {
+export async function updateTask(id: number, updatedTask: TodoRequest) {
   try {
     const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
       method: 'PUT',

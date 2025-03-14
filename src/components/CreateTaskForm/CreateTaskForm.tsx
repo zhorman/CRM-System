@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { createTask } from '../../api/api.ts';
-import styles from './CreateTaskForm.module.css';
-import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants.ts';
-import { generateError } from '../../utils/helpers.ts';
+import { createTask } from '../../api/api';
+import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
+import { generateError } from '../../utils/helpers';
 
-interface FetchTasksProp {
+import styles from './CreateTaskForm.module.css';
+
+interface CreateTaskProps {
   fetchTasks: () => void;
 }
 
-export const CreateTaskForm = ({ fetchTasks }: FetchTasksProp) => {
+export default function CreateTaskForm({ fetchTasks }: CreateTaskProps) {
   const [taskName, setTaskName] = useState('');
   const [error, setError] = useState('');
 
@@ -50,4 +51,4 @@ export const CreateTaskForm = ({ fetchTasks }: FetchTasksProp) => {
       {error && <p className={styles.error}>{error}</p>}
     </form>
   );
-};
+}

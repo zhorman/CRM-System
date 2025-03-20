@@ -1,4 +1,4 @@
-import { TaskFilters, TodoRequest } from "../types/todos";
+import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
 
 export async function createTask(task: TodoRequest) {
   try {
@@ -24,19 +24,23 @@ export async function createTask(task: TodoRequest) {
   }
 }
 
-export async function getTasks(param: TaskFilters) {
+export async function getTasks(
+  param: TaskFilters
+): Promise<MetaResponse | null> {
   try {
-    const response = await fetch(`https://easydev.club/api/v1/todos?filter=${param}`);
-
-    const data = await response.json();
+    const response = await fetch(
+      `https://easydev.club/api/v1/todos?filter=${param}`
+    );
 
     if (!response.ok) {
-      throw new Error(`Ошибка ${response.status}: ${data}`);
+      throw new Error(`Ошибка ${response.status}: ${response.text}`);
     }
 
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Ошибка:', error);
+    return null;
   }
 }
 
@@ -50,6 +54,7 @@ export async function deleteTask(id: number) {
       const errorText = await response.text();
       throw new Error(`Ошибка ${response.status}: ${errorText}`);
     }
+    console.log(response);
     return;
   } catch (error) {
     console.error('Ошибка при удалении:', error);

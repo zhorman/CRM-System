@@ -1,10 +1,10 @@
-import { TaskObj } from '../../types/todos';
+import { Todo } from '../../types/todos';
 import TaskItem from '../TaskItem/TaskItem';
 
 import styles from './TaskList.module.css';
 
 interface TaskListProps {
-  tasksList: TaskObj[];
+  tasksList: Todo[];
   fetchTasks: () => void;
 }
 

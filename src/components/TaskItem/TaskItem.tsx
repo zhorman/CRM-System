@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { updateTask, deleteTask } from '../../api/api';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
 import { generateError } from '../../utils/helpers';
-import { TaskObj, TodoRequest } from '../../types/todos';
+import { Todo, TodoRequest } from '../../types/todos';
 
 import styles from './TaskItem.module.css';
 
 interface TaskItemProps {
-  task: TaskObj;
+  task: Todo;
   fetchTasks: () => void;
 }
 

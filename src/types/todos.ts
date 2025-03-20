@@ -3,16 +3,25 @@ export interface TodoRequest {
   isDone: boolean;
 }
 
-export interface TaskObj {
+export interface Todo {
   id: number;
   title: string;
+  created?: string;
   isDone: boolean;
 }
 
-export interface TaskCounts  {
+export interface TodoInfo {
   all: number;
   completed: number;
   inWork: number;
 }
 
-export type TaskFilters = 'all' | 'completed' | 'inWork';
+export enum TaskFilters {
+  All = "all",
+  Completed = "completed",
+  InWork = "inWork"
+}
+export interface MetaResponse {
+  data: Todo[];
+  info: TodoInfo;
+}

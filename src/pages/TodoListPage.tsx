@@ -31,28 +31,29 @@ export default function TodoListPage() {
   useEffect(() => {
     console.log('Компонент монтируется');
     fetchTasks();
+
+    const updateInteval = setInterval(() => {
+      console.log('Компонент ререндерится');
+      fetchTasks();
+    }, 5000);
+    return () => clearInterval(updateInteval);
   }, [activeFilter]);
 
   return (
     <>
-      <header>
-        <h1>Todolist</h1>
-      </header>
-      <main>
-        <CreateTaskForm fetchTasks={fetchTasks} />
-        {error ? (
-          <p>{error}</p>
-        ) : (
-          <>
-            <FilterTabs
-              taskCounts={taskCounts}
-              activeFilter={activeFilter}
-              setActiveFilter={setActiveFilter}
-            />
-            <TaskList tasksList={tasksList} fetchTasks={fetchTasks} />
-          </>
-        )}
-      </main>
+      <CreateTaskForm fetchTasks={fetchTasks} />
+      {error ? (
+        <p>{error}</p>
+      ) : (
+        <>
+          <FilterTabs
+            taskCounts={taskCounts}
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+          />
+          <TaskList tasksList={tasksList} fetchTasks={fetchTasks} />
+        </>
+      )}
     </>
   );
 }

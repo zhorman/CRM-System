@@ -1,7 +1,7 @@
 import { Todo } from '../../types/todos';
 import TaskItem from '../TaskItem/TaskItem';
 
-import styles from './TaskList.module.css';
+import { List } from 'antd';
 
 interface TaskListProps {
   tasksList: Todo[];
@@ -11,11 +11,13 @@ interface TaskListProps {
 export default function TaskList({ tasksList, fetchTasks }: TaskListProps) {
   return (
     <>
-      <ul className={styles.taskList}>
-        {tasksList.map((task) => (
+      <List
+        grid={{ column: 1 }}
+        dataSource={tasksList}
+        renderItem={(task) => (
           <TaskItem key={task.id} task={task} fetchTasks={fetchTasks} />
-        ))}
-      </ul>
+        )}
+      />
     </>
   );
 }

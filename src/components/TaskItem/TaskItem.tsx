@@ -6,6 +6,14 @@ import { generateError } from '../../utils/helpers';
 import { Todo, TodoRequest } from '../../types/todos';
 
 import styles from './TaskItem.module.css';
+import { Button, List, Form, Input, Checkbox, Flex, Typography } from 'antd';
+import {
+  EditFilled,
+  DeleteFilled,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
+const { Text } = Typography;
 
 interface TaskItemProps {
   task: Todo;
@@ -18,9 +26,7 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
   const [isChecked, setIsChecked] = useState<boolean>(task.isDone);
   const [error, setError] = useState<string>('');
 
-  async function handleSubmitForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  async function handleSubmitForm() {
     const trimmedValue = taskItemName.trim();
     const validationError = generateError(trimmedValue);
 
@@ -65,62 +71,83 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
   }
 
   return (
-    <li className={styles.task}>
+    <List.Item style={{ padding: '5px 10px' }} className={styles.listItem}>
       {isEditing ? (
-        <form className={styles.editForm} onSubmit={handleSubmitForm}>
-          <div className={styles.content}>
-            <input
-              className={styles.checkbox}
+        <Form
+          name="taksItemForm"
+          className={styles.editForm}
+          onFinish={handleSubmitForm}>
+          <Form.Item style={{ margin: '0' }}>
+            <Checkbox
               type="checkbox"
               checked={task.isDone}
-              onChange={() => handleChecked(task.id, { title: taskItemName, isDone: !isChecked })}
+              onChange={() =>
+                handleChecked(task.id, {
+                  title: taskItemName,
+                  isDone: !isChecked,
+                })
+              }
             />
-            <div className={styles.inputWrapper}>
-              <input
-                className={styles.input}
-                type="text"
-                value={taskItemName}
-                onChange={handleChange}
-                autoFocus
-                minLength={MIN_TASK_LENGTH}
-                maxLength={MAX_TASK_LENGTH}
-              />
-              {error && <div className={styles.errorMessage}>{error}</div>}
-            </div>
-          </div>
-          <div className={styles.buttons}>
-            <button
-              type="submit"
-              className={styles.buttonBlue}
+          </Form.Item>
+          <Form.Item
+            initialValue={taskItemName}
+            name="taskItemName"
+            style={{ flex: 1, margin: '0' }}
+            rules={[
+              { required: true, message: 'Поле не может быть пустым' },
+              {
+                min: MIN_TASK_LENGTH,
+                message: `Минимальная длина — ${MIN_TASK_LENGTH} символа`,
+              },
+              {
+                max: MAX_TASK_LENGTH,
+                message: `Максимальная длина — ${MAX_TASK_LENGTH} символа`,
+              },
+            ]}>
+            <Input type="text" onChange={handleChange} autoFocus />
+          </Form.Item>
+          <Form.Item style={{ margin: '0' }}>
+            <Button
+              type="primary"
+              htmlType="submit"
               disabled={!!error || !taskItemName.trim()}>
-              ✔️
-            </button>
-            <button type="button" className={styles.buttonRed} onClick={handleCancelEdit}>
-              ✖️
-            </button>
-          </div>
-        </form>
+              <CheckOutlined />
+            </Button>
+          </Form.Item>
+          <Form.Item style={{ margin: '0' }}>
+            <Button type="primary" danger onClick={handleCancelEdit}>
+              <CloseOutlined />
+            </Button>
+          </Form.Item>
+        </Form>
       ) : (
-        <>
-          <div className={styles.content}>
-            <input
-              className={styles.checkbox}
-              type="checkbox"
-              checked={task.isDone}
-              onChange={() => handleChecked(task.id, { title: taskItemName, isDone: !isChecked })}
-            />
-            <span className={task.isDone ? styles.nameDone : styles.name}>{task.title}</span>
-          </div>
-          <div className={styles.buttons}>
-            <button className={styles.buttonBlue} onClick={() => setIsEditing(true)}>
-              ✏️
-            </button>
-            <button className={styles.buttonRed} onClick={() => handleRemoveTask(task.id)}>
-              🗑️
-            </button>
-          </div>
-        </>
+        <Flex gap="small" align="center">
+          <Checkbox
+            type="checkbox"
+            checked={task.isDone}
+            onChange={() =>
+              handleChecked(task.id, {
+                title: taskItemName,
+                isDone: !isChecked,
+              })
+            }
+          />
+          <Text
+            style={{ flex: 1 }}
+            className={task.isDone ? styles.nameDone : styles.name}>
+            {task.title}
+          </Text>
+          <Button type="primary" onClick={() => setIsEditing(true)}>
+            <EditFilled />
+          </Button>
+          <Button
+            type="primary"
+            danger
+            onClick={() => handleRemoveTask(task.id)}>
+            <DeleteFilled />
+          </Button>
+        </Flex>
       )}
-    </li>
+    </List.Item>
   );
 }

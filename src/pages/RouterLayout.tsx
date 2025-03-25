@@ -1,15 +1,14 @@
 import { Outlet } from 'react-router';
 import MainNavigation from '../components/MainNavigation';
 
-import { Typography, Layout } from 'antd';
+import { Layout } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;
-const { Title } = Typography;
 
 function RootLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ backgroundColor: 'inherit', textAlign: 'center' }}>
-        <Title>CRM</Title>
+        Header
       </Header>
       <Layout>
         <Sider

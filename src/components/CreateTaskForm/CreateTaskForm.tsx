@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createTask } from '../../api/api';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
-import { generateError } from '../../utils/helpers';
+import { isInvalidText } from '../../utils/helpers';
 
 import { Button, Form, Input } from 'antd';
 
@@ -16,9 +16,7 @@ export default function CreateTaskForm({ fetchTasks }: CreateTaskProps) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const value = event.target.value;
 
-    const validationError = generateError(value);
-
-    if (validationError) {
+    if (isInvalidText(value)) {
       setError(true);
     } else {
       setError(false);

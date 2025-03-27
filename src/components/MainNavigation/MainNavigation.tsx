@@ -11,7 +11,7 @@ export default function MainNavigation() {
         {
           key: 'todolist',
           label: (
-            <NavLink to="todolist" end type='primary'>
+            <NavLink to="todolist" end type="primary">
               Todolist
             </NavLink>
           ),

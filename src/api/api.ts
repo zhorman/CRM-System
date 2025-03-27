@@ -1,12 +1,14 @@
 import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
 import axios from 'axios';
 
+const apiInstance = axios.create({
+  baseURL: 'https://easydev.club/api/v1',
+});
+
 export async function createTask(task: TodoRequest) {
   try {
-    const response = await axios.post(
-      'https://easydev.club/api/v1/todos',
-      task
-    );
+    const response = await apiInstance.post('/todos', task);
+
     console.log('Ответ сервера post:', response.data);
     return response.data;
   } catch (error) {
@@ -15,12 +17,13 @@ export async function createTask(task: TodoRequest) {
 }
 
 export async function getTasks(
-  param: TaskFilters
+  query: TaskFilters
 ): Promise<MetaResponse | null> {
   try {
-    const response = await axios.get(
-      `https://easydev.club/api/v1/todos?filter=${param}`
-    );
+    const response = await apiInstance.get('/todos', {
+      params: { filter: query },
+    });
+
     console.log('Ответ сервера get:', response);
     return response.data;
   } catch (error) {
@@ -31,9 +34,8 @@ export async function getTasks(
 
 export async function deleteTask(id: number) {
   try {
-    const response = await axios.delete(
-      `https://easydev.club/api/v1/todos/${id}`
-    );
+    const response = await apiInstance.delete(`/todos/${id}`);
+
     console.log('Ответ сервера delete:', response);
     return;
   } catch (error) {
@@ -43,10 +45,8 @@ export async function deleteTask(id: number) {
 
 export async function updateTask(id: number, updatedTask: TodoRequest) {
   try {
-    const response = await axios.put(
-      `https://easydev.club/api/v1/todos/${id}`,
-      updatedTask
-    );
+    const response = await apiInstance.put(`/todos/${id}`, updatedTask);
+
     console.log('Ответ сервера put:', response);
     return response;
   } catch (error) {

@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import MainNavigation from '../components/MainNavigation';
+import MainNavigation from '../components/MainNavigation/MainNavigation';
 
 import { Layout } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;

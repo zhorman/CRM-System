@@ -7,6 +7,7 @@ import FilterTabs from '../components/FilterTabs/FilterTabs';
 
 export default function TodoListPage() {
   const [tasksList, setTasksList] = useState<Todo[]>([]);
+  const [error, setError] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<TaskFilters>(
     TaskFilters.All
   );
@@ -15,7 +16,6 @@ export default function TodoListPage() {
     completed: 0,
     inWork: 0,
   });
-  const [error, setError] = useState('');
 
   async function fetchTasks() {
     const data = await getTasks(activeFilter);
@@ -33,10 +33,13 @@ export default function TodoListPage() {
     fetchTasks();
 
     const updateInteval = setInterval(() => {
-      console.log('Компонент ререндерится');
+      console.log('Компонент ререндерится каждые 5 сек');
       fetchTasks();
     }, 5000);
-    return () => clearInterval(updateInteval);
+    return () => {
+      console.log('Компонент демонтируется');
+      return clearInterval(updateInteval);
+    };
   }, [activeFilter]);
 
   return (

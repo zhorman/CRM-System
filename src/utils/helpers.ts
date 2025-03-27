@@ -1,18 +1,14 @@
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from './constants';
 
-export function generateError(text: string) {
+export function isInvalidText(text: string) {
   const trimmedText = text.trim();
-  if (!trimmedText) {
-    return 'Задача не может быть пустой';
+  if (
+    !trimmedText ||
+    trimmedText.length < MIN_TASK_LENGTH ||
+    trimmedText.length > MAX_TASK_LENGTH
+  ) {
+    return true;
   }
 
-  if (trimmedText.length < MIN_TASK_LENGTH) {
-    return `Минимальная длина: ${MIN_TASK_LENGTH} символа.`;
-  }
-
-  if (trimmedText.length > MAX_TASK_LENGTH) {
-    return `Максимальная длина: ${MAX_TASK_LENGTH} символов.`;
-  }
-
-  return '';
+  return false;
 }

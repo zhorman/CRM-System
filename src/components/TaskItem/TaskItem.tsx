@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { updateTask, deleteTask } from '../../api/api';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
-import { generateError } from '../../utils/helpers';
+import { isInvalidText } from '../../utils/helpers';
 import { Todo, TodoRequest } from '../../types/todos';
 
 import styles from './TaskItem.module.css';
@@ -20,18 +20,22 @@ interface TaskItemProps {
   fetchTasks: () => void;
 }
 
-export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
+const TaskItem = React.memo(function TaskItem({
+  task,
+  fetchTasks,
+}: TaskItemProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [taskItemName, setTaskItemName] = useState<string>(task.title);
   const [isChecked, setIsChecked] = useState<boolean>(task.isDone);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
+
+  console.log('Rendering Task:', task.id);
 
   async function handleSubmitForm() {
     const trimmedValue = taskItemName.trim();
-    const validationError = generateError(trimmedValue);
 
-    if (validationError) {
-      setError(validationError);
+    if (isInvalidText(taskItemName)) {
+      setError(true);
       return;
     }
 
@@ -41,14 +45,14 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
     });
 
     setIsEditing(false);
-    setError('');
+    setError(false);
     fetchTasks();
   }
 
   function handleCancelEdit() {
     setTaskItemName(task.title);
     setIsEditing(false);
-    setError('');
+    setError(false);
   }
 
   async function handleRemoveTask(id: number) {
@@ -60,8 +64,7 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
     const value = event.target.value;
     setTaskItemName(value);
 
-    const validationError = generateError(value);
-    setError(validationError);
+    setError(isInvalidText(value));
   }
 
   async function handleChecked(id: number, updatedData: TodoRequest) {
@@ -110,7 +113,7 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
             <Button
               type="primary"
               htmlType="submit"
-              disabled={!!error || !taskItemName.trim()}>
+              disabled={error}>
               <CheckOutlined />
             </Button>
           </Form.Item>
@@ -150,4 +153,6 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
       )}
     </List.Item>
   );
-}
+});
+
+export default TaskItem;

@@ -3,7 +3,7 @@ import RootLayout from './pages/RouterLayout';
 import TodoListPage from './pages/TodoListPage';
 import ProfilePage from './pages/ProfiePage';
 
-let router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: '/',
     Component: RootLayout,

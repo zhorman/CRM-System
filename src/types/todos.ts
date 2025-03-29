@@ -25,3 +25,6 @@ export interface MetaResponse {
   data: Todo[];
   info: TodoInfo;
 }
+export interface FormValues {
+  taskName: string;
+}

@@ -1,85 +1,55 @@
 import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
+import axios from 'axios';
+
+const apiInstance = axios.create({
+  baseURL: 'https://easydev.club/api/v1',
+});
 
 export async function createTask(task: TodoRequest) {
   try {
-    const response = await fetch('https://easydev.club/api/v1/todos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(task),
-    });
+    const response = await apiInstance.post('/todos', task);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Ошибка ${response.status}: ${errorText}`);
-    }
-
-    const returnedData = await response.json();
-
-    console.log('Ответ сервера:', returnedData);
-    return returnedData;
+    console.log('Ответ сервера post:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('Ошибка:', error);
+    console.error('Ошибка post:', error);
   }
 }
 
 export async function getTasks(
-  param: TaskFilters
+  query: TaskFilters
 ): Promise<MetaResponse | null> {
   try {
-    const response = await fetch(
-      `https://easydev.club/api/v1/todos?filter=${param}`
-    );
+    const response = await apiInstance.get('/todos', {
+      params: { filter: query },
+    });
 
-    if (!response.ok) {
-      throw new Error(`Ошибка ${response.status}: ${response.text}`);
-    }
-
-    const data = await response.json();
-    return data;
+    console.log('Ответ сервера get:', response);
+    return response.data;
   } catch (error) {
-    console.error('Ошибка:', error);
+    console.error('Ошибка get:', error);
     return null;
   }
 }
 
 export async function deleteTask(id: number) {
   try {
-    const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
-      method: 'DELETE',
-    });
+    const response = await apiInstance.delete(`/todos/${id}`);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Ошибка ${response.status}: ${errorText}`);
-    }
-    console.log(response);
+    console.log('Ответ сервера delete:', response);
     return;
   } catch (error) {
     console.error('Ошибка при удалении:', error);
-    return null;
   }
 }
 
 export async function updateTask(id: number, updatedTask: TodoRequest) {
   try {
-    const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedTask),
-    });
+    const response = await apiInstance.put(`/todos/${id}`, updatedTask);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Ошибка ${response.status}: ${errorText}`);
-    }
-
-    return await response.json();
+    console.log('Ответ сервера put:', response);
+    return response;
   } catch (error) {
     console.error('Ошибка при обновлении:', error);
-    return null;
   }
 }

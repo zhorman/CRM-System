@@ -1,12 +1,7 @@
-import styles from './App.module.css';
-import TodoListPage from './pages/TodoListPage';
+import RootLayout from './pages/RouterLayout';
 
 function App() {
-  return (
-    <div className={styles.container}>
-      <TodoListPage />
-    </div>
-  );
+  return <RootLayout />;
 }
 
 export default App;

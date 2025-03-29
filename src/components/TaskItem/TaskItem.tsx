@@ -2,60 +2,49 @@
 import React, { useState } from 'react';
 import { updateTask, deleteTask } from '../../api/api';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
-import { generateError } from '../../utils/helpers';
-import { Todo, TodoRequest } from '../../types/todos';
+import { Todo, TodoRequest, FormValues } from '../../types/todos';
 
 import styles from './TaskItem.module.css';
+import { Button, List, Form, Input, Checkbox, Flex, Typography } from 'antd';
+const { Text } = Typography;
+import {
+  EditFilled,
+  DeleteFilled,
+  CheckOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 
 interface TaskItemProps {
   task: Todo;
   fetchTasks: () => void;
 }
 
-export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
+const TaskItem = React.memo(function TaskItem({
+  task,
+  fetchTasks,
+}: TaskItemProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [taskItemName, setTaskItemName] = useState<string>(task.title);
   const [isChecked, setIsChecked] = useState<boolean>(task.isDone);
-  const [error, setError] = useState<string>('');
 
-  async function handleSubmitForm(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  console.log('Rendering Task:', task.id);
 
-    const trimmedValue = taskItemName.trim();
-    const validationError = generateError(trimmedValue);
-
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
+  async function handleSubmitForm(values: FormValues) {
     await updateTask(task.id, {
-      title: trimmedValue,
+      title: values.taskName,
       isDone: isChecked,
     });
 
     setIsEditing(false);
-    setError('');
     fetchTasks();
   }
 
   function handleCancelEdit() {
-    setTaskItemName(task.title);
     setIsEditing(false);
-    setError('');
   }
 
   async function handleRemoveTask(id: number) {
     await deleteTask(id);
     fetchTasks();
-  }
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const value = event.target.value;
-    setTaskItemName(value);
-
-    const validationError = generateError(value);
-    setError(validationError);
   }
 
   async function handleChecked(id: number, updatedData: TodoRequest) {
@@ -65,62 +54,91 @@ export default function TaskItem({ task, fetchTasks }: TaskItemProps) {
   }
 
   return (
-    <li className={styles.task}>
+    <List.Item style={{ padding: '5px 10px' }} className={styles.listItem}>
       {isEditing ? (
-        <form className={styles.editForm} onSubmit={handleSubmitForm}>
-          <div className={styles.content}>
-            <input
-              className={styles.checkbox}
+        <Form
+          name="taksItemForm"
+          className={styles.editForm}
+          onFinish={handleSubmitForm}>
+          <Form.Item style={{ margin: '0' }}>
+            <Checkbox
               type="checkbox"
               checked={task.isDone}
-              onChange={() => handleChecked(task.id, { title: taskItemName, isDone: !isChecked })}
+              onChange={() =>
+                handleChecked(task.id, {
+                  title: task.title,
+                  isDone: !isChecked,
+                })
+              }
             />
-            <div className={styles.inputWrapper}>
-              <input
-                className={styles.input}
-                type="text"
-                value={taskItemName}
-                onChange={handleChange}
-                autoFocus
-                minLength={MIN_TASK_LENGTH}
-                maxLength={MAX_TASK_LENGTH}
-              />
-              {error && <div className={styles.errorMessage}>{error}</div>}
-            </div>
-          </div>
-          <div className={styles.buttons}>
-            <button
-              type="submit"
-              className={styles.buttonBlue}
-              disabled={!!error || !taskItemName.trim()}>
-              ✔️
-            </button>
-            <button type="button" className={styles.buttonRed} onClick={handleCancelEdit}>
-              ✖️
-            </button>
-          </div>
-        </form>
+          </Form.Item>
+          <Form.Item
+            initialValue={task.title}
+            name="taskName"
+            style={{ flex: 1, margin: '0' }}
+            rules={[
+              {
+                required: true,
+                whitespace: true,
+                message: 'Поле не может быть пустым',
+              },
+              {
+                min: MIN_TASK_LENGTH,
+                message: `Минимальная длина — ${MIN_TASK_LENGTH} символа`,
+                transform: (value) => value.trim(),
+              },
+              {
+                max: MAX_TASK_LENGTH,
+                message: `Максимальная длина — ${MAX_TASK_LENGTH} символа`,
+                transform: (value) => value.trim(),
+              },
+            ]}>
+            <Input type="text" autoFocus />
+          </Form.Item>
+          <Form.Item style={{ margin: '0' }}>
+            <Button type="primary" htmlType="submit" icon={<CheckOutlined />} />
+          </Form.Item>
+          <Form.Item style={{ margin: '0' }}>
+            <Button
+              type="primary"
+              danger
+              onClick={handleCancelEdit}
+              icon={<CloseOutlined />}
+            />
+          </Form.Item>
+        </Form>
       ) : (
-        <>
-          <div className={styles.content}>
-            <input
-              className={styles.checkbox}
-              type="checkbox"
-              checked={task.isDone}
-              onChange={() => handleChecked(task.id, { title: taskItemName, isDone: !isChecked })}
-            />
-            <span className={task.isDone ? styles.nameDone : styles.name}>{task.title}</span>
-          </div>
-          <div className={styles.buttons}>
-            <button className={styles.buttonBlue} onClick={() => setIsEditing(true)}>
-              ✏️
-            </button>
-            <button className={styles.buttonRed} onClick={() => handleRemoveTask(task.id)}>
-              🗑️
-            </button>
-          </div>
-        </>
+        <Flex gap="small" align="center">
+          <Checkbox
+            type="checkbox"
+            checked={task.isDone}
+            onChange={() =>
+              handleChecked(task.id, {
+                title: task.title,
+                isDone: !isChecked,
+              })
+            }
+          />
+          <Text
+            style={{ flex: 1 }}
+            className={task.isDone ? styles.nameDone : styles.name}>
+            {task.title}
+          </Text>
+          <Button
+            type="primary"
+            onClick={() => setIsEditing(true)}
+            icon={<EditFilled />}
+          />
+          <Button
+            type="primary"
+            danger
+            onClick={() => handleRemoveTask(task.id)}
+            icon={<DeleteFilled />}
+          />
+        </Flex>
       )}
-    </li>
+    </List.Item>
   );
-}
+});
+
+export default TaskItem;

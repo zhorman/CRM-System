@@ -12,13 +12,13 @@ export default function MainNavigation() {
           key: 'todolist',
           label: (
             <NavLink to="todolist" end type="primary">
-              Todolist
+              Cписок задач
             </NavLink>
           ),
         },
         {
           key: 'profile',
-          label: <NavLink to="/profile">Profile</NavLink>,
+          label: <NavLink to="/profile">Личный кабинет</NavLink>,
         },
       ]}
     />

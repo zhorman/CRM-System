@@ -1,14 +1,13 @@
-import { Todo } from '../../types/todos';
 import TaskItem from '../TaskItem/TaskItem';
-
+import { useAppSelector } from '../../store/hooks';
 import { List } from 'antd';
 
 interface TaskListProps {
-  tasksList: Todo[];
   fetchTasks: () => void;
 }
 
-export default function TaskList({ tasksList, fetchTasks }: TaskListProps) {
+export default function TaskList({ fetchTasks }: TaskListProps) {
+  const tasksList = useAppSelector((state) => state.taskList.data);
   return (
     <>
       <List

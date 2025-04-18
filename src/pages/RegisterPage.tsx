@@ -1,6 +1,7 @@
 import React from 'react';
 import RegisterForm from '../components/RegistrationForm/RegisterForm';
 import { Typography, Row, Col} from 'antd';
+import loginImg from '../assets/illustration.svg';
 
 const { Title, Paragraph } = Typography;
 
@@ -8,7 +9,7 @@ function RegisterPage() {
   return (
     <Row>
       <Col span={14}>
-        <img src="src/assets/illustration.svg" width="100%" />
+        <img src={loginImg} width="100%" />
       </Col>
       <Col
         span={10}

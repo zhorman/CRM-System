@@ -1,6 +1,7 @@
 import React from 'react';
 import LoginForm from '../components/AuthForm/LoginForm';
 import { Typography, Row, Col } from 'antd';
+import loginImg from '../assets/illustration.svg';
 
 const { Title, Paragraph } = Typography;
 
@@ -8,7 +9,7 @@ function LoginPage() {
   return (
     <Row style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <Col span={14}>
-        <img src="src/assets/illustration.svg" width="100%" />
+        <img src={loginImg} width="100%" />
       </Col>
       <Col
         span={10}

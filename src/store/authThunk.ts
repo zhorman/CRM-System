@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { todoApi } from '../api/api';
-import { AuthData, UserRegistration, Token, Profile } from '../types/user';
+import { AuthData, UserRegistration } from '../types/user';
 
-export const signin = createAsyncThunk<Token, AuthData>(
+export const signin = createAsyncThunk(
   'auth/signin',
-  async ({ login, password }: AuthData, thunkAPI) => {
+  async ({ login, password }: AuthData, { rejectWithValue }) => {
     try {
       const response = await todoApi.post('/auth/signin', {
         login,
@@ -12,18 +12,22 @@ export const signin = createAsyncThunk<Token, AuthData>(
       });
 
       return response.data;
-    } catch (error) {
-      console.log('Ошибка signin', error);
-      return thunkAPI.rejectWithValue(error);
+    } catch (error: any) {
+      console.log('Ошибка signin', error.response.data);
+
+      return rejectWithValue({
+        status: error.response.status,
+        message: error.response.data,
+      });
     }
   }
 );
 
-export const signup = createAsyncThunk<Profile, UserRegistration>(
-  'auth/signin',
+export const signup = createAsyncThunk(
+  'auth/signup',
   async (
     { email, login, password, phoneNumber, username }: UserRegistration,
-    thunkAPI
+    { rejectWithValue }
   ) => {
     try {
       const response = await todoApi.post('/auth/signup', {
@@ -34,9 +38,13 @@ export const signup = createAsyncThunk<Profile, UserRegistration>(
         username,
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.log('Ошибка signup', error);
-      return thunkAPI.rejectWithValue(error);
+
+      return rejectWithValue({
+        status: error.response.status,
+        message: error.response.data,
+      });
     }
   }
 );

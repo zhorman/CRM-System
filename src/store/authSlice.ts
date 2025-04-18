@@ -53,8 +53,9 @@ const authSlice = createSlice({
         );
       })
       .addCase(signin.rejected, (state, action) => {
+        console.log('Rejected action.payload:', action.payload);
         state.loading = false;
-        state.error = action.payload || 'Неизвестная ошибка';
+        state.error = action.payload;
       });
   },
 });

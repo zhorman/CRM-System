@@ -1,8 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { signin } from '../../store/authThunk';
-import type { FormProps } from 'antd';
-import { Typography, Flex, Button, Checkbox, Form, Input } from 'antd';
 import { useAppDispatch } from '../../store/hooks';
+import type { FormProps } from 'antd';
+import {
+  Typography,
+  Flex,
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  notification,
+} from 'antd';
+
 const { Text } = Typography;
 
 function LoginForm() {
@@ -14,7 +23,8 @@ function LoginForm() {
       console.log(values);
       await dispatch(signin(values)).unwrap();
       navigate('/todolist');
-    } catch (error) {
+    } catch (error: any) {
+      notification.error({ message: 'Ошибка логина: ' + error.message });
       console.log('Ошибка входа:', error);
     }
   };

@@ -1,6 +1,4 @@
-import React from 'react';
 import type { FormProps } from 'antd';
-import { Typography, Button, Form, Input, notification } from 'antd';
 import { Link, useNavigate } from 'react-router';
 import { useAppDispatch } from '../../store/hooks';
 import { signup } from '../../store/authThunk';
@@ -12,6 +10,8 @@ import {
   MIN_PASSWORD_LENGTH,
   MAX_PASSWORD_LENGTH,
 } from '../../utils/constants';
+
+import { Typography, Button, Form, Input, notification } from 'antd';
 
 const { Paragraph } = Typography;
 
@@ -42,7 +42,7 @@ function RegisterForm() {
         duration: 5,
       });
     } catch (error: any) {
-      notification.error({ message: 'Ошибка регистрации: ' + error.response.data });
+      notification.error({ message: 'Ошибка регистрации: ' + error.message });
       console.log('Ошибка регистрации:', error);
     }
   };

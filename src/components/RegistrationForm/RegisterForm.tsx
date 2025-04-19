@@ -57,7 +57,7 @@ function RegisterForm() {
       layout="vertical"
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      style={{ maxWidth: 800 }}
+      style={{ minWidth: 300 }}
       scrollToFirstError>
       <Form.Item
         name="username"

@@ -7,7 +7,7 @@ const { Title, Paragraph } = Typography;
 
 function RegisterPage() {
   return (
-    <Row>
+    <Row style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <Col span={14}>
         <img src={loginImg} width="100%" />
       </Col>
@@ -17,7 +17,7 @@ function RegisterPage() {
           placeContent: 'center',
           placeItems: 'center',
         }}>
-        <Title level={2}>Login to your Account</Title>
+        <Title level={2}>Register your Account</Title>
         <Paragraph>See what is going on with your business</Paragraph>
         <RegisterForm />
       </Col>

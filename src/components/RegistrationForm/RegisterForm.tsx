@@ -165,9 +165,15 @@ function RegisterForm() {
         <Input />
       </Form.Item>
       <Form.Item
-        name="phone"
+        name="phoneNumber"
         label="Телефон"
-        rules={[{ message: 'Please input your phone number!' }]}>
+        rules={[
+          { message: 'Введите номер телефона!' },
+          {
+            pattern: /^\+\d{11}$/,
+            message: 'Номер в формате +79991234567',
+          },
+        ]}>
         <Input style={{ width: '100%' }} />
       </Form.Item>
 

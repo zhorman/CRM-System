@@ -3,19 +3,19 @@ import { signin } from './authThunk';
 import { REFRESH_TOKEN_LIFETIME } from '../utils/constants';
 
 interface AuthState {
-  accessToken: string | null;
   refreshToken: string | null;
   tokenExpiration: number | null;
   loading: boolean;
   error: any;
+  isAuthorized: boolean;
 }
 
 const initialState: AuthState = {
-  accessToken: localStorage.getItem('accessToken') || null,
   refreshToken: localStorage.getItem('refreshToken') || null,
   tokenExpiration: null,
   loading: false,
   error: null,
+  isAuthorized: false,
 };
 
 const authSlice = createSlice({
@@ -23,15 +23,15 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setTokens: (state, action) => {
-      state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+      state.tokenExpiration = Date.now() + REFRESH_TOKEN_LIFETIME;
+      state.isAuthorized = true;
     },
     logout(state) {
-      state.accessToken = null;
       state.refreshToken = null;
       localStorage.removeItem('refreshToken');
-      localStorage.removeItem('accessToken');
       localStorage.removeItem('tokenExpiration');
+      state.isAuthorized = false;
     },
   },
   extraReducers: (builder) => {
@@ -42,14 +42,15 @@ const authSlice = createSlice({
       })
       .addCase(signin.fulfilled, (state, action) => {
         state.loading = false;
-        state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.tokenExpiration = Date.now() + REFRESH_TOKEN_LIFETIME;
+
+        state.isAuthorized = true;
+        console.log(state.isAuthorized);
         localStorage.setItem('refreshToken', action.payload.refreshToken);
-        localStorage.setItem('accessToken', action.payload.accessToken);
         localStorage.setItem(
           'tokenExpiration',
-          Date.now() + REFRESH_TOKEN_LIFETIME.toString()
+          state.tokenExpiration.toString()
         );
       })
       .addCase(signin.rejected, (state, action) => {

@@ -1,30 +1,16 @@
 import { Outlet, Navigate } from 'react-router';
-import { useEffect } from 'react';
 import MainNavigation from '../components/MainNavigation/MainNavigation';
-import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { useAppSelector } from '../store/hooks';
 
 import { Layout } from 'antd';
-import { logout } from '../store/authSlice';
 const { Header, Footer, Sider, Content } = Layout;
 
 function RootLayout() {
   const refreshToken = useAppSelector((state) => state.auth.refreshToken);
   const tokenExpiration = useAppSelector((state) => state.auth.tokenExpiration);
-  const dispatch = useAppDispatch();
+  const isExpiredToken = tokenExpiration && Date.now() > tokenExpiration;
 
-  useEffect(() => {
-    if (
-      !refreshToken ||
-      (tokenExpiration !== null && Date.now() > tokenExpiration)
-    ) {
-      dispatch(logout());
-    }
-  }, [refreshToken, tokenExpiration, dispatch]);
-
-  if (
-    !refreshToken ||
-    (tokenExpiration !== null && Date.now() > tokenExpiration)
-  ) {
+  if (!refreshToken || isExpiredToken) {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,23 +1,17 @@
-import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
 import axios from 'axios';
+import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
 import { setTokens, logout } from '../store/authSlice';
 import { Dispatch } from '@reduxjs/toolkit';
-
-export const todoApi = axios.create({
-  baseURL: 'https://easydev.club/api/v1',
-});
+import { tokenManager } from '../utils/tokenManager';
 
 export const userApi = axios.create({
   baseURL: 'https://easydev.club/api/v1',
 });
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const setupInterceptors = (dispatch: Dispatch) => {
   userApi.interceptors.request.use((config) => {
+    const accessToken = tokenManager.get();
     console.log('request interceptor', config);
-    const accessToken = localStorage.getItem('accessToken');
-
     console.log('request interceptor accessToken', accessToken);
 
     if (accessToken) {
@@ -34,14 +28,12 @@ export const setupInterceptors = (dispatch: Dispatch) => {
     },
     async (error) => {
       const originalResponse = error.config;
-      console.log('ответ - ошибка originalResponse', originalResponse);
       const refreshToken = localStorage.getItem('refreshToken');
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+      console.log('ответ - ошибка originalResponse', originalResponse);
 
-      if (
-        error.response &&
-        error.response.status === 401 &&
-        !originalResponse._retry
-      ) {
+      if (error.response?.status === 401 && !originalResponse._retry) {
         originalResponse._retry = true;
 
         try {
@@ -52,21 +44,24 @@ export const setupInterceptors = (dispatch: Dispatch) => {
           await delay(1000);
           const response = await axios.post(
             'https://easydev.club/api/v1/auth/refresh',
-            { refreshToken }
+            {
+              refreshToken,
+            }
           );
           console.log('Ответ интерцептор response userApi.post', response.data);
 
           const { accessToken, refreshToken: newRefreshToken } = response.data;
 
           dispatch(setTokens({ accessToken, refreshToken: newRefreshToken }));
+          tokenManager.set(accessToken);
           localStorage.setItem('refreshToken', newRefreshToken);
-          localStorage.setItem('accessToken', accessToken);
 
           originalResponse.headers.Authorization = `Bearer ${accessToken}`;
           return userApi(originalResponse);
         } catch (error) {
           console.log('Error!:', error);
           dispatch(logout());
+          tokenManager.clear();
           return Promise.reject(error);
         }
       } else {
@@ -79,7 +74,7 @@ export const setupInterceptors = (dispatch: Dispatch) => {
 
 export async function createTask(task: TodoRequest) {
   try {
-    const response = await todoApi.post('/todos', task);
+    const response = await userApi.post('/todos', task);
 
     console.log('Ответ сервера post:', response.data);
     return response.data;
@@ -92,7 +87,7 @@ export async function getTasks(
   query: TaskFilters
 ): Promise<MetaResponse | null> {
   try {
-    const response = await todoApi.get('/todos', {
+    const response = await userApi.get('/todos', {
       params: { filter: query },
     });
 
@@ -106,7 +101,7 @@ export async function getTasks(
 
 export async function deleteTask(id: number) {
   try {
-    const response = await todoApi.delete(`/todos/${id}`);
+    const response = await userApi.delete(`/todos/${id}`);
 
     console.log('Ответ сервера delete:', response);
     return;
@@ -117,7 +112,7 @@ export async function deleteTask(id: number) {
 
 export async function updateTask(id: number, updatedTask: TodoRequest) {
   try {
-    const response = await todoApi.put(`/todos/${id}`, updatedTask);
+    const response = await userApi.put(`/todos/${id}`, updatedTask);
 
     console.log('Ответ сервера put:', response);
     return response;

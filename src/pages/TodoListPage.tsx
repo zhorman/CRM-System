@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getTasks } from '../api/api';
+import { getTasks } from '../api/todoApi';
 import CreateTaskForm from '../components/CreateTaskForm/CreateTaskForm';
 import TaskList from '../components/TaskList/TaskList';
 import FilterTabs from '../components/FilterTabs/FilterTabs';

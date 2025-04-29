@@ -27,10 +27,12 @@ const authSlice = createSlice({
       state.tokenExpiration = Date.now() + REFRESH_TOKEN_LIFETIME;
       state.isAuthorized = true;
     },
+    setAuthorized: (state, action) => {
+      state.isAuthorized = action.payload;
+    },
     logout(state) {
       state.refreshToken = null;
       localStorage.removeItem('refreshToken');
-      localStorage.removeItem('tokenExpiration');
       state.isAuthorized = false;
     },
   },
@@ -48,10 +50,6 @@ const authSlice = createSlice({
         state.isAuthorized = true;
         console.log(state.isAuthorized);
         localStorage.setItem('refreshToken', action.payload.refreshToken);
-        localStorage.setItem(
-          'tokenExpiration',
-          state.tokenExpiration.toString()
-        );
       })
       .addCase(signin.rejected, (state, action) => {
         console.log('Rejected action.payload:', action.payload);
@@ -61,6 +59,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setTokens } = authSlice.actions;
+export const { logout, setTokens, setAuthorized } = authSlice.actions;
 
 export default authSlice.reducer;

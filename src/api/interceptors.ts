@@ -1,15 +1,11 @@
 import axios from 'axios';
-import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
-import { setTokens, logout } from '../store/authSlice';
 import { Dispatch } from '@reduxjs/toolkit';
+import { setTokens, logout } from '../store/authSlice';
 import { tokenManager } from '../utils/tokenManager';
-
-export const userApi = axios.create({
-  baseURL: 'https://easydev.club/api/v1',
-});
+import { api } from './apiClient';
 
 export const setupInterceptors = (dispatch: Dispatch) => {
-  userApi.interceptors.request.use((config) => {
+  api.interceptors.request.use((config) => {
     const accessToken = tokenManager.get();
     console.log('request interceptor', config);
     console.log('request interceptor accessToken', accessToken);
@@ -21,7 +17,7 @@ export const setupInterceptors = (dispatch: Dispatch) => {
     return config;
   });
 
-  userApi.interceptors.response.use(
+  api.interceptors.response.use(
     (response) => {
       console.log('Response:', response.status, response.data);
       return response;
@@ -48,7 +44,7 @@ export const setupInterceptors = (dispatch: Dispatch) => {
               refreshToken,
             }
           );
-          console.log('Ответ интерцептор response userApi.post', response.data);
+          console.log('Ответ интерцептор response api.post', response.data);
 
           const { accessToken, refreshToken: newRefreshToken } = response.data;
 
@@ -57,7 +53,7 @@ export const setupInterceptors = (dispatch: Dispatch) => {
           localStorage.setItem('refreshToken', newRefreshToken);
 
           originalResponse.headers.Authorization = `Bearer ${accessToken}`;
-          return userApi(originalResponse);
+          return api(originalResponse);
         } catch (error) {
           console.log('Error!:', error);
           dispatch(logout());
@@ -71,64 +67,3 @@ export const setupInterceptors = (dispatch: Dispatch) => {
     }
   );
 };
-
-export async function createTask(task: TodoRequest) {
-  try {
-    const response = await userApi.post('/todos', task);
-
-    console.log('Ответ сервера post:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Ошибка post:', error);
-  }
-}
-
-export async function getTasks(
-  query: TaskFilters
-): Promise<MetaResponse | null> {
-  try {
-    const response = await userApi.get('/todos', {
-      params: { filter: query },
-    });
-
-    console.log('Ответ сервера get:', response);
-    return response.data;
-  } catch (error) {
-    console.error('Ошибка get:', error);
-    return null;
-  }
-}
-
-export async function deleteTask(id: number) {
-  try {
-    const response = await userApi.delete(`/todos/${id}`);
-
-    console.log('Ответ сервера delete:', response);
-    return;
-  } catch (error) {
-    console.error('Ошибка при удалении:', error);
-  }
-}
-
-export async function updateTask(id: number, updatedTask: TodoRequest) {
-  try {
-    const response = await userApi.put(`/todos/${id}`, updatedTask);
-
-    console.log('Ответ сервера put:', response);
-    return response;
-  } catch (error) {
-    console.error('Ошибка при обновлении:', error);
-  }
-}
-
-export async function getUser() {
-  try {
-    const response = await userApi.get('/user/profile');
-
-    console.log('Ответ сервера getUser:', response);
-    return response.data;
-  } catch (error) {
-    console.error('Ошибка getUser:', error);
-    return null;
-  }
-}

@@ -1,19 +1,27 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import RootLayout from './pages/RouterLayout';
+import RootLayout from './layouts/RouterLayout';
 import TodoListPage from './pages/TodoListPage';
 import ProfilePage from './pages/ProfilePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import AuthLayout from './layouts/AuthLayout';
+import LoginForm from './components/AuthForm/LoginForm';
+import RegisterForm from './components/RegistrationForm/RegisterForm';
 
 const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />, 
+    path: '/',
+    element: <AuthLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginForm />,
+      },
+      {
+        path: '/register',
+        element: <RegisterForm />,
+      },
+    ],
   },
-  {
-    path: '/register',
-    element: <RegisterPage />,
-  },
+
   {
     path: '/',
     element: <RootLayout />,

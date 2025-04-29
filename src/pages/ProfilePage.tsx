@@ -1,10 +1,17 @@
-import { getUser } from '../api/api';
+import { getUser } from '../api/usersApi';
 import { useAppDispatch } from '../store/hooks';
 import { useEffect, useState } from 'react';
 import { logout } from '../store/authSlice';
 import { ProfileResponse } from '../types/user';
 
-import { Card, Descriptions, Button, Flex, DescriptionsProps } from 'antd';
+import {
+  Card,
+  Descriptions,
+  Button,
+  Flex,
+  DescriptionsProps,
+  Spin,
+} from 'antd';
 
 function ProfilePage() {
   const [user, setUser] = useState<ProfileResponse | null>(null);
@@ -32,8 +39,9 @@ function ProfilePage() {
   if (!user) {
     return (
       <Card>
-        <p style={{ textAlign: 'center' }}>Загрузка профиля...</p>{' '}
-        <Button onClick={handleLogout}>Logout</Button>
+        <Spin tip="Loading">
+          <p />
+        </Spin>
       </Card>
     );
   }

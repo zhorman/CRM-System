@@ -132,3 +132,26 @@ export async function getUser() {
     return null;
   }
 }
+export async function getUserById(id: string) {
+  try {
+    const response = await userApi.get(`/admin/users/${id}`);
+
+    console.log('Ответ сервера getUser:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка getUser:', error);
+    return null;
+  }
+}
+
+export async function getUsers() {
+  try {
+    const response = await userApi.get('/admin/users');
+
+    console.log('Ответ сервера getUsers:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка getUser:', error);
+    return null;
+  }
+}

@@ -1,24 +1,27 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Menu } from 'antd';
 
 export default function MainNavigation() {
+  const location = useLocation();
+  const currentPath = location.pathname.split('/')[1] || 'todolist';
+
   return (
     <Menu
       style={{ backgroundColor: 'inherit', minHeight: '100%' }}
       mode="inline"
-      defaultSelectedKeys={['todolist']}
+      selectedKeys={[currentPath]}
       items={[
         {
           key: 'todolist',
           label: (
-            <NavLink to="todolist" end type="primary">
-              Todolist
+            <NavLink to="/todolist" end>
+              Cписок задач
             </NavLink>
           ),
         },
         {
           key: 'profile',
-          label: <NavLink to="/profile">Profile</NavLink>,
+          label: <NavLink to="/profile">Личный кабинет</NavLink>,
         },
       ]}
     />

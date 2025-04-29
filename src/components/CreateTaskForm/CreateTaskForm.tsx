@@ -1,5 +1,5 @@
 import { FormValues } from '../../types/todos';
-import { createTask } from '../../api/api';
+import { createTask } from '../../api/todoApi';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
 
 import { Button, Form, Input } from 'antd';

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { updateTask, deleteTask } from '../../api/api';
+import { updateTask, deleteTask } from '../../api/todoApi';
 import { MIN_TASK_LENGTH, MAX_TASK_LENGTH } from '../../utils/constants';
 import { Todo, TodoRequest, FormValues } from '../../types/todos';
 

@@ -1,20 +1,16 @@
-import { TodoInfo, TaskFilters } from '../../types/todos';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { TaskFilters } from '../../types/todos';
+import { taskListActions } from '../../store/taskListSlice';
 import styles from './FilterTabs.module.css';
 import { Flex, Button } from 'antd';
 
-interface FilterTabsProps {
-  activeFilter: TaskFilters;
-  setActiveFilter: (query: TaskFilters) => void;
-  taskCounts: TodoInfo;
-}
+export default function FilterTabs() {
+  const dispatch = useAppDispatch();
+  const activeFilter = useAppSelector((state) => state.taskList.activeFilter);
+  const taskCounts = useAppSelector((state) => state.taskList.info);
 
-export default function FilterTabs({
-  activeFilter,
-  setActiveFilter,
-  taskCounts,
-}: FilterTabsProps) {
   async function loadTasks(query: TaskFilters) {
-    setActiveFilter(query);
+    dispatch(taskListActions.setActiveFilter(query));
   }
 
   return (

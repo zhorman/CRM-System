@@ -1,21 +1,39 @@
-import { createBrowserRouter, redirect } from 'react-router-dom';
-import RootLayout from './pages/RouterLayout';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import RootLayout from './layouts/RouterLayout';
 import TodoListPage from './pages/TodoListPage';
-import ProfilePage from './pages/ProfiePage';
+import ProfilePage from './pages/ProfilePage';
+import AuthLayout from './layouts/AuthLayout';
+import LoginForm from './components/AuthForm/LoginForm';
+import RegisterForm from './components/RegistrationForm/RegisterForm';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: RootLayout,
+    element: <AuthLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginForm />,
+      },
+      {
+        path: '/register',
+        element: <RegisterForm />,
+      },
+    ],
+  },
+
+  {
+    path: '/',
+    element: <RootLayout />,
     children: [
       {
         index: true,
-        loader: () => redirect('/todolist'),
+        element: <Navigate to="/todolist" replace />,
       },
-      { path: 'todolist', Component: TodoListPage },
+      { path: 'todolist', element: <TodoListPage /> },
       {
         path: 'profile',
-        Component: ProfilePage,
+        element: <ProfilePage />,
       },
     ],
   },

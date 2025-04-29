@@ -1,21 +1,15 @@
 import { useState, useEffect } from 'react';
-import { getTasks } from '../api/api';
-import { TodoInfo, TaskFilters, Todo } from '../types/todos';
+import { getTasks } from '../api/todoApi';
 import CreateTaskForm from '../components/CreateTaskForm/CreateTaskForm';
 import TaskList from '../components/TaskList/TaskList';
 import FilterTabs from '../components/FilterTabs/FilterTabs';
+import { taskListActions } from '../store/taskListSlice';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
 
 export default function TodoListPage() {
-  const [tasksList, setTasksList] = useState<Todo[]>([]);
+  const dispatch = useAppDispatch();
+  const activeFilter = useAppSelector((state) => state.taskList.activeFilter);
   const [error, setError] = useState<string>('');
-  const [activeFilter, setActiveFilter] = useState<TaskFilters>(
-    TaskFilters.All
-  );
-  const [taskCounts, setTaskCounts] = useState<TodoInfo>({
-    all: 0,
-    completed: 0,
-    inWork: 0,
-  });
 
   async function fetchTasks() {
     const data = await getTasks(activeFilter);
@@ -23,8 +17,9 @@ export default function TodoListPage() {
     if (!data) {
       setError('Ошибка при загрузки задач');
     } else {
-      setTasksList(data.data);
-      setTaskCounts(data.info);
+      dispatch(
+        taskListActions.setTaskList({ data: data.data, info: data.info })
+      );
     }
   }
 
@@ -49,12 +44,8 @@ export default function TodoListPage() {
         <p>{error}</p>
       ) : (
         <>
-          <FilterTabs
-            taskCounts={taskCounts}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-          />
-          <TaskList tasksList={tasksList} fetchTasks={fetchTasks} />
+          <FilterTabs />
+          <TaskList fetchTasks={fetchTasks} />
         </>
       )}
     </>

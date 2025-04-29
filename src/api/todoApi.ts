@@ -1,13 +1,9 @@
+import { api } from './apiClient';
 import { TaskFilters, TodoRequest, MetaResponse } from '../types/todos';
-import axios from 'axios';
-
-const apiInstance = axios.create({
-  baseURL: 'https://easydev.club/api/v1',
-});
 
 export async function createTask(task: TodoRequest) {
   try {
-    const response = await apiInstance.post('/todos', task);
+    const response = await api.post('/todos', task);
 
     console.log('Ответ сервера post:', response.data);
     return response.data;
@@ -20,7 +16,7 @@ export async function getTasks(
   query: TaskFilters
 ): Promise<MetaResponse | null> {
   try {
-    const response = await apiInstance.get('/todos', {
+    const response = await api.get('/todos', {
       params: { filter: query },
     });
 
@@ -34,7 +30,7 @@ export async function getTasks(
 
 export async function deleteTask(id: number) {
   try {
-    const response = await apiInstance.delete(`/todos/${id}`);
+    const response = await api.delete(`/todos/${id}`);
 
     console.log('Ответ сервера delete:', response);
     return;
@@ -45,7 +41,7 @@ export async function deleteTask(id: number) {
 
 export async function updateTask(id: number, updatedTask: TodoRequest) {
   try {
-    const response = await apiInstance.put(`/todos/${id}`, updatedTask);
+    const response = await api.put(`/todos/${id}`, updatedTask);
 
     console.log('Ответ сервера put:', response);
     return response;

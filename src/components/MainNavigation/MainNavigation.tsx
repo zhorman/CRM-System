@@ -7,6 +7,7 @@ export default function MainNavigation() {
   const currentPath = location.pathname.split('/')[1] || 'todolist';
   const userRoles = useAppSelector((state) => state.user?.userData?.roles);
   const isAdmin = userRoles?.includes('ADMIN') || false;
+  const isModerator = userRoles?.includes('MODERATOR') || false;
 
   return (
     <Menu
@@ -26,7 +27,7 @@ export default function MainNavigation() {
           key: 'profile',
           label: <NavLink to="/profile">Личный кабинет</NavLink>,
         },
-        ...(isAdmin
+        ...(isAdmin || isModerator
           ? [
               {
                 key: 'users',

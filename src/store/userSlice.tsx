@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getUser } from '../api/api';
+import { getUser } from '../api/usersApi';
 import { Role } from '../types/user';
 
 interface User {

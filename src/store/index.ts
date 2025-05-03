@@ -2,10 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import taskListSlice from './taskListSlice';
 import authReducer from './authSlice';
 import userReducer from './userSlice';
-import { setupInterceptors } from '../api/api';
+import { setupInterceptors } from '../api/interceptors';
 
 export const store = configureStore({
-  reducer: { taskList: taskListSlice.reducer, auth: authReducer, user: userReducer },
+  reducer: {
+    taskList: taskListSlice.reducer,
+    auth: authReducer,
+    user: userReducer,
+  },
 });
 
 setupInterceptors(store.dispatch);

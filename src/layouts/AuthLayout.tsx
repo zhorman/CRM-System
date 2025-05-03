@@ -1,11 +1,15 @@
 import React from 'react';
-import RegisterForm from '../components/RegistrationForm/RegisterForm';
-import { Typography, Row, Col} from 'antd';
+import { Typography, Row, Col } from 'antd';
 import loginImg from '../assets/illustration.svg';
+import { Outlet } from 'react-router';
+import { useMatch } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 
-function RegisterPage() {
+function AuthLayout() {
+  const isRegister = useMatch('/register');
+  const title = isRegister ? 'Register your Account' : 'Login to your Account';
+
   return (
     <Row style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <Col span={14}>
@@ -17,12 +21,12 @@ function RegisterPage() {
           placeContent: 'center',
           placeItems: 'center',
         }}>
-        <Title level={2}>Register your Account</Title>
+        <Title level={2}>{title}</Title>
         <Paragraph>See what is going on with your business</Paragraph>
-        <RegisterForm />
+        <Outlet />
       </Col>
     </Row>
   );
 }
 
-export default RegisterPage;
+export default AuthLayout;

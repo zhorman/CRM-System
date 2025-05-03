@@ -1,7 +1,6 @@
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
-import { getUserById } from '../api/api';
-import { EditOutlined } from '@ant-design/icons';
+import { getUserById, updateUser } from '../api/usersApi';
 
 import {
   Card,
@@ -10,9 +9,9 @@ import {
   Form,
   Input,
   Button,
+  Flex,
 } from 'antd';
 import { MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH } from '../utils/constants';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 interface User {
   username: string;
@@ -23,20 +22,21 @@ interface User {
 function ProfilePage() {
   const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<User | null>(null);
-
+  const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const navigate = useNavigate();
+
+  const fetchUserById = async () => {
+    if (id) {
+      const data = await getUserById(id);
+      setUser(data);
+    } else {
+      console.error('ID пользователя не найден');
+    }
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (id) {
-        const data = await getUserById(id);
-        setUser(data);
-      } else {
-        console.error('ID пользователя не найден');
-      }
-    };
-
-    fetchUser();
+    fetchUserById();
   }, [id]);
 
   if (!user) {
@@ -65,7 +65,15 @@ function ProfilePage() {
     },
   ];
 
-  function onFinish() {}
+  async function onFinish() {
+    if (!id) {
+      console.error('ID пользователя не найден');
+      return;
+    }
+    await updateUser(id, form.getFieldsValue());
+    await fetchUserById();
+    setIsEditing(false);
+  }
 
   function handleCancelEdit() {
     setIsEditing(false);
@@ -73,90 +81,107 @@ function ProfilePage() {
 
   return (
     <>
-      {isEditing ? (
-        <Form name="taksItemForm" onFinish={onFinish} size="small">
-          <Form.Item
-            initialValue={user.username}
-            name="username"
-            rules={[
-              {
-                required: true,
-                whitespace: true,
-                message: 'Поле не может быть пустым',
-              },
-              {
-                min: MIN_USERNAME_LENGTH,
-                message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
-                transform: (value) => value.trim(),
-              },
-              {
-                max: MAX_USERNAME_LENGTH,
-                message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
-                transform: (value) => value.trim(),
-              },
-            ]}>
-            <Input type="text" autoFocus />
-          </Form.Item>
-          <Form.Item
-            initialValue={user.email}
-            name="email"
-            rules={[
-              {
-                required: true,
-                whitespace: true,
-                message: 'Поле не может быть пустым',
-              },
-              {
-                min: MIN_USERNAME_LENGTH,
-                message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
-                transform: (value) => value.trim(),
-              },
-              {
-                max: MAX_USERNAME_LENGTH,
-                message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
-                transform: (value) => value.trim(),
-              },
-            ]}>
-            <Input type="text" />
-          </Form.Item>
-          <Form.Item
-            initialValue={user.phoneNumber}
-            name="phoneNumber"
-            rules={[
-              {
-                min: MIN_USERNAME_LENGTH,
-                message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
-                transform: (value) => value.trim(),
-              },
-              {
-                max: MAX_USERNAME_LENGTH,
-                message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
-                transform: (value) => value.trim(),
-              },
-            ]}>
-            <Input type="text" />
-          </Form.Item>
-          <Form.Item style={{  gap: '10px' }}>
-            <Button type="primary" htmlType="submit" icon={<CheckOutlined />} />
-            <Button
-              type="primary"
-              danger
-              onClick={handleCancelEdit}
-              icon={<CloseOutlined />}
-            />
-          </Form.Item>
-        </Form>
-      ) : (
+      {!isEditing ? (
         <Card
           actions={[
-            <EditOutlined
+            <Button
               key="edit"
-              onClick={() => setIsEditing(!isEditing)}
-            />,
+              onClick={() => {
+                form.setFieldsValue(user);
+                setIsEditing(true);
+              }}>
+              Редактировать
+            </Button>,
           ]}>
           <Descriptions column={1} title="Профиль" items={items} />
         </Card>
+      ) : (
+        <Card>
+          <Form
+            form={form}
+            name="taksItemForm"
+            onFinish={onFinish}
+            colon={false}>
+            <Form.Item
+              name="username"
+              label="Имя пользователя"
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: 'Поле не может быть пустым',
+                },
+                {
+                  min: MIN_USERNAME_LENGTH,
+                  message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
+                  transform: (value) => value.trim(),
+                },
+                {
+                  max: MAX_USERNAME_LENGTH,
+                  message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
+                  transform: (value) => value.trim(),
+                },
+              ]}>
+              <Input type="text" autoFocus />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: 'Поле не может быть пустым',
+                },
+                {
+                  min: MIN_USERNAME_LENGTH,
+                  message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
+                  transform: (value) => value.trim(),
+                },
+                {
+                  max: MAX_USERNAME_LENGTH,
+                  message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
+                  transform: (value) => value.trim(),
+                },
+              ]}>
+              <Input type="text" />
+            </Form.Item>
+            <Form.Item
+              name="phoneNumber"
+              label="Номер телефона"
+              rules={[
+                {
+                  min: MIN_USERNAME_LENGTH,
+                  message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
+                  transform: (value) => value.trim(),
+                },
+                {
+                  max: MAX_USERNAME_LENGTH,
+                  message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
+                  transform: (value) => value.trim(),
+                },
+              ]}>
+              <Input type="text" />
+            </Form.Item>
+            <Form.Item style={{ gap: '10px' }}>
+              <Flex gap="small">
+                <Button type="primary" htmlType="submit">
+                  Сохранить
+                </Button>
+                <Button danger onClick={handleCancelEdit}>
+                  Отменить
+                </Button>
+              </Flex>
+            </Form.Item>
+          </Form>
+        </Card>
       )}
+      <Button
+        color="primary"
+        variant="outlined"
+        onClick={() => navigate('/users')}>
+        Вернуться к таблице
+      </Button>
     </>
   );
 }

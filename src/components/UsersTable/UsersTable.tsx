@@ -230,7 +230,7 @@ const UsersTable = () => {
       title: 'Действия',
       key: 'action',
       render: (_, record) => (
-        <Flex wrap align="start" gap={5}>
+        <Flex wrap align="start" gap={4}>
           <Button
             block
             type="default"

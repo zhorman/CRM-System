@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Row, Col } from 'antd';
-import authImg from '../assets/authImg.png';
+import authImg from '../assets/authimg.png';
 import { Outlet } from 'react-router';
 import { useMatch } from 'react-router-dom';
 

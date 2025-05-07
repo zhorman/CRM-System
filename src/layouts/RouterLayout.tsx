@@ -46,7 +46,7 @@ function RootLayout() {
 
   return (
     <Layout
-      style={{ minHeight: '100vh', maxWidth: '1600px', margin: '0 auto' }}>
+      style={{ minHeight: '100vh', maxWidth: '1650px', margin: '0 auto' }}>
       <Header style={{ backgroundColor: 'inherit', textAlign: 'center' }}>
         Header
       </Header>

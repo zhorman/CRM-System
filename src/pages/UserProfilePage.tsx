@@ -65,12 +65,15 @@ function ProfilePage() {
     },
   ];
 
+  function onFieldsChange() {}
+
   async function onFinish() {
     if (!id) {
       console.error('ID пользователя не найден');
       return;
     }
-    await updateUser(id, form.getFieldsValue());
+    const changedFields = form.getFieldsValue(true, (meta) => meta.touched);
+    await updateUser(id, changedFields);
     await fetchUserById();
     setIsEditing(false);
   }
@@ -100,6 +103,7 @@ function ProfilePage() {
           <Form
             form={form}
             name="taksItemForm"
+            onFieldsChange={onFieldsChange}
             onFinish={onFinish}
             colon={false}>
             <Form.Item
@@ -129,19 +133,12 @@ function ProfilePage() {
               label="Email"
               rules={[
                 {
+                  type: 'email',
+                  message: 'Некорректный E-mail!',
+                },
+                {
                   required: true,
-                  whitespace: true,
-                  message: 'Поле не может быть пустым',
-                },
-                {
-                  min: MIN_USERNAME_LENGTH,
-                  message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
-                  transform: (value) => value.trim(),
-                },
-                {
-                  max: MAX_USERNAME_LENGTH,
-                  message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
-                  transform: (value) => value.trim(),
+                  message: 'Введите ваш E-mail!',
                 },
               ]}>
               <Input type="text" />
@@ -150,15 +147,10 @@ function ProfilePage() {
               name="phoneNumber"
               label="Номер телефона"
               rules={[
+                { message: 'Введите номер телефона!' },
                 {
-                  min: MIN_USERNAME_LENGTH,
-                  message: `Минимальная длина — ${MIN_USERNAME_LENGTH} символа`,
-                  transform: (value) => value.trim(),
-                },
-                {
-                  max: MAX_USERNAME_LENGTH,
-                  message: `Максимальная длина — ${MAX_USERNAME_LENGTH} символа`,
-                  transform: (value) => value.trim(),
+                  pattern: /^\+\d{11}$/,
+                  message: 'Номер в формате +79991234567',
                 },
               ]}>
               <Input type="text" />

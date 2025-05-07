@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Roles } from '../../types/admin';
+import { Roles, UserFilters } from '../../types/admin';
 import {
   getFilteredUsers,
   getUsers,
@@ -23,6 +23,7 @@ import {
 } from 'antd';
 import type { TableProps } from 'antd';
 import { useAppSelector } from '../../store/hooks';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
@@ -37,20 +38,21 @@ interface DataType {
 }
 
 const UsersTable = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<DataType[]>([]);
+  const user = useAppSelector((state) => state.user.userData);
   const [searchText, setSearchText] = useState('');
-  const [totalUsersAmount, setTotalUsesrAmount] = useState(0);
+  const [sortAndFilters, setSortAndFilters] = useState<UserFilters>({});
+  const [totalUsersAmount, setTotalUsesrAmount] = useState<number>(0);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 20,
     total: 0,
     showSizeChanger: false,
   });
-  const navigate = useNavigate();
   const [editingUserId, setEditingUserId] = useState<string>('');
   const [editingRoles, setEditingRoles] = useState<Roles[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const user = useAppSelector((state) => state.user.userData);
   const isAdmin = user && user.roles.includes('ADMIN');
 
   const roleOptions = [Roles.ADMIN, Roles.MODERATOR, Roles.USER];
@@ -91,23 +93,26 @@ const UsersTable = () => {
   ) => {
     console.log(newPagination, filters, sorter);
 
-    const { data, meta } = await getFilteredUsers({
+    const newSortFilters = {
       sortBy: sorter.field,
-      sortOrder:
-        sorter.order === 'ascend'
-          ? 'asc'
-          : sorter.order === 'descend'
-          ? 'desc'
-          : undefined,
+      sortOrder: (sorter.order === 'ascend'
+        ? 'asc'
+        : sorter.order === 'descend'
+        ? 'desc'
+        : undefined) as 'asc' | 'desc' | undefined,
       search: searchText || undefined,
       isBlocked:
         filters.isBlocked?.[0] === 'all'
           ? undefined
-          : filters.isBlocked?.[0] != null,
+          : filters.isBlocked?.[0] === true
+          ? true
+          : false,
       limit: newPagination.pageSize,
       offset: newPagination.current - 1,
-    });
+    };
 
+    const { data, meta } = await getFilteredUsers(newSortFilters);
+    setSortAndFilters(newSortFilters);
     setUsers(data);
     setPagination(newPagination);
     setTotalUsesrAmount(meta.totalAmount);
@@ -122,12 +127,14 @@ const UsersTable = () => {
 
   const handleBlockUser = async (userId: string) => {
     await blockUserById(userId);
-    fetchUsers();
+    const { data } = await getFilteredUsers(sortAndFilters);
+    setUsers(data);
   };
 
   const handleUnblockUser = async (userId: string) => {
     await unblockUserById(userId);
-    fetchUsers();
+    const { data } = await getFilteredUsers(sortAndFilters);
+    setUsers(data);
   };
 
   const startEdit = (record: DataType) => {
@@ -174,6 +181,12 @@ const UsersTable = () => {
       title: 'Дата регистрации',
       dataIndex: 'date',
       key: 'date',
+      render: (date: string) =>
+        new Date(date).toLocaleDateString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }),
     },
     {
       title: 'Cтатус пользователя',
@@ -197,6 +210,8 @@ const UsersTable = () => {
           ]
         : undefined,
       filterMultiple: false,
+      defaultFilteredValue: ['all'],
+      filterResetToDefaultFilteredValue: true,
     },
     {
       title: 'Роли',
@@ -230,17 +245,52 @@ const UsersTable = () => {
       title: 'Действия',
       key: 'action',
       render: (_, record) => (
-        <Flex wrap align="start" gap={4}>
+        <Flex wrap gap="small">
           <Button
             block
+            size="small"
             type="default"
             color="primary"
             onClick={() => handleGoToProfile(record)}>
-            Перейти к профилю <b>{record.username}</b>
+            Профиль <b>{record.username}</b>
           </Button>
+
+          {record.isBlocked ? (
+            <Popconfirm
+              title="Разблокировка пользователя"
+              description="Действительно хотите разблокировать пользователя?"
+              onConfirm={() => handleUnblockUser(record.id)}
+              okText="Да"
+              cancelText="Нет">
+              <Button color="red" variant="dashed" size="small">
+                Разблокировать
+              </Button>
+            </Popconfirm>
+          ) : (
+            <Popconfirm
+              title="Блокировка пользователя"
+              description="Действительно хотите заблокировать пользователя?"
+              onConfirm={() => handleBlockUser(record.id)}
+              okText="Да"
+              cancelText="Нет">
+              <Button danger size="small">
+                Блокировать
+              </Button>
+            </Popconfirm>
+          )}
+          <Popconfirm
+            title="Удаление пользователя"
+            description="Действительно хотите удалить пользователя?"
+            onConfirm={() => handleDeleteUser(record.id)}
+            okText="Да"
+            cancelText="Нет">
+            <Button type="primary" danger size="small">
+              Удалить
+            </Button>
+          </Popconfirm>
           {isAdmin &&
             (editingUserId === record.id ? (
-              <Space>
+              <Flex vertical gap="small">
                 <Select
                   mode="multiple"
                   value={editingRoles}
@@ -254,52 +304,29 @@ const UsersTable = () => {
                   }))}
                   placeholder="Выберите роли"
                 />
-                <Button color="green" variant="outlined" onClick={saveEdit}>
-                  Сохранить
-                </Button>
-                <Button danger onClick={handleModalCancel}>
-                  Отмена
-                </Button>
-              </Space>
+                <Space>
+                  <Button
+                    color="green"
+                    variant="outlined"
+                    onClick={saveEdit}
+                    icon={<CheckOutlined />}
+                  />
+                  <Button
+                    danger
+                    onClick={handleModalCancel}
+                    icon={<CloseOutlined />}
+                  />
+                </Space>
+              </Flex>
             ) : (
               <Button
                 color="primary"
                 variant="outlined"
+                size="small"
                 onClick={() => startEdit(record)}>
                 Изменить роли
               </Button>
             ))}
-          {record.isBlocked ? (
-            <Popconfirm
-              title="Разблокировка пользователя"
-              description="Действительно хотите разблокировать пользователя?"
-              onConfirm={() => handleUnblockUser(record.id)}
-              okText="Да"
-              cancelText="Нет">
-              <Button color="red" variant="dashed">
-                Разблокировать
-              </Button>
-            </Popconfirm>
-          ) : (
-            <Popconfirm
-              title="Блокировка пользователя"
-              description="Действительно хотите заблокировать пользователя?"
-              onConfirm={() => handleBlockUser(record.id)}
-              okText="Да"
-              cancelText="Нет">
-              <Button danger>Блокировать</Button>
-            </Popconfirm>
-          )}
-          <Popconfirm
-            title="Удаление пользователя"
-            description="Действительно хотите удалить пользователя?"
-            onConfirm={() => handleDeleteUser(record.id)}
-            okText="Да"
-            cancelText="Нет">
-            <Button type="primary" danger>
-              Удалить
-            </Button>
-          </Popconfirm>
         </Flex>
       ),
     },

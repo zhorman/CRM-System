@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDebounce } from '../../utils/useDebounce';
+import { useAppSelector } from '../../store/hooks';
 import { Roles, UserFilters } from '../../types/admin';
 import {
-  getFilteredUsers,
   getUsers,
   deleteUser,
-  searchUsers,
   blockUserById,
   unblockUserById,
   updateUserRoles,
@@ -20,9 +20,9 @@ import {
   Select,
   Space,
   Modal,
+  notification,
 } from 'antd';
 import type { TableProps } from 'antd';
-import { useAppSelector } from '../../store/hooks';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
@@ -37,13 +37,20 @@ interface DataType {
   phoneNumber: string;
 }
 
+const ROLE_COLORS = {
+  ADMIN: 'red',
+  MODERATOR: 'orange',
+  USER: 'green',
+};
+
 const UsersTable = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<DataType[]>([]);
   const user = useAppSelector((state) => state.user.userData);
   const [searchText, setSearchText] = useState('');
+  const debouncedValue = useDebounce(searchText);
   const [sortAndFilters, setSortAndFilters] = useState<UserFilters>({});
-  const [totalUsersAmount, setTotalUsesrAmount] = useState<number>(0);
+  const [totalUsersAmount, setTotalUsersAmount] = useState<number>(0);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 20,
@@ -59,10 +66,9 @@ const UsersTable = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data, meta } = await getUsers();
-      console.log(data);
+      const { data, meta } = await getUsers({ search: debouncedValue });
       setUsers(data);
-      setTotalUsesrAmount(meta.totalAmount);
+      setTotalUsersAmount(meta.totalAmount);
       setPagination({
         ...pagination,
         total: meta.totalAmount,
@@ -70,20 +76,31 @@ const UsersTable = () => {
       console.log(meta.totalAmount);
     } catch (error) {
       console.error('Ошибка при получении пользователей:', error);
+      notification.error({
+        message: 'Не удалось загрузить пользователей',
+        description: (error as any).message || 'Неизвестная ошибка',
+      });
     }
   };
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [debouncedValue]);
 
   const handleGoToProfile = (user: DataType) => {
     navigate(`/users/${user.id}`);
   };
 
   const handleDeleteUser = async (userId: string) => {
-    await deleteUser(userId);
-    fetchUsers();
+    try {
+      await deleteUser(userId);
+      fetchUsers();
+    } catch (error) {
+      notification.error({
+        message: 'Не удалось удалить пользователя',
+        description: (error as any).message || 'Неизвестная ошибка',
+      });
+    }
   };
 
   const handleTableChange = async (
@@ -111,30 +128,41 @@ const UsersTable = () => {
       offset: newPagination.current - 1,
     };
 
-    const { data, meta } = await getFilteredUsers(newSortFilters);
+    const { data, meta } = await getUsers(newSortFilters);
     setSortAndFilters(newSortFilters);
     setUsers(data);
     setPagination(newPagination);
-    setTotalUsesrAmount(meta.totalAmount);
+    setTotalUsersAmount(meta.totalAmount);
   };
 
-  const handleSearch = async (value: string) => {
-    const { data, meta } = await searchUsers(value);
-    setUsers(data);
-    setSearchText(value);
-    setTotalUsesrAmount(meta.totalAmount);
+  const handleSearch = async () => {
+    fetchUsers();
   };
 
   const handleBlockUser = async (userId: string) => {
-    await blockUserById(userId);
-    const { data } = await getFilteredUsers(sortAndFilters);
-    setUsers(data);
+    try {
+      await blockUserById(userId);
+      const { data } = await getUsers(sortAndFilters);
+      setUsers(data);
+    } catch (error: any) {
+      notification.error({
+        message: 'Не удалось заблокировать пользователя',
+        description: error.message || 'Неизвестная ошибка',
+      });
+    }
   };
 
   const handleUnblockUser = async (userId: string) => {
-    await unblockUserById(userId);
-    const { data } = await getFilteredUsers(sortAndFilters);
-    setUsers(data);
+    try {
+      await unblockUserById(userId);
+      const { data } = await getUsers(sortAndFilters);
+      setUsers(data);
+    } catch (error: any) {
+      notification.error({
+        message: 'Не удалось разблокировать пользователя',
+        description: error.message || 'Неизвестная ошибка',
+      });
+    }
   };
 
   const startEdit = (record: DataType) => {
@@ -220,13 +248,7 @@ const UsersTable = () => {
       render: (_, { roles }) => (
         <>
           {(roles || []).map((role) => {
-            let color = 'green';
-            if (role === 'ADMIN') {
-              color = 'red';
-            }
-            if (role === 'MODERATOR') {
-              color = 'orange';
-            }
+            const color = ROLE_COLORS[role] || 'default';
             return (
               <Tag color={color} key={role}>
                 {role}
@@ -340,7 +362,7 @@ const UsersTable = () => {
       <Search
         placeholder="Поиск по имени или email"
         onSearch={handleSearch}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e) => setSearchText(e.target.value)}
         style={{ marginBottom: 16, maxWidth: 400 }}
         allowClear
       />

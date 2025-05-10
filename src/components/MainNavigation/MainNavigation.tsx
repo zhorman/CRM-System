@@ -6,8 +6,8 @@ export default function MainNavigation() {
   const location = useLocation();
   const currentPath = location.pathname.split('/')[1] || 'todolist';
   const userRoles = useAppSelector((state) => state.user?.userData?.roles);
-  const isAdmin = userRoles?.includes('ADMIN') || false;
-  const isModerator = userRoles?.includes('MODERATOR') || false;
+  const isAdmin = userRoles?.includes('ADMIN');
+  const isModerator = userRoles?.includes('MODERATOR');
 
   return (
     <Menu

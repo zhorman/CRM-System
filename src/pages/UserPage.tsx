@@ -10,8 +10,11 @@ import {
   Input,
   Button,
   Flex,
+  notification,
 } from 'antd';
 import { MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH } from '../utils/constants';
+
+import { PHONE_REGEX } from '../utils/constants';
 
 interface User {
   username: string;
@@ -19,7 +22,7 @@ interface User {
   phoneNumber: string;
 }
 
-function ProfilePage() {
+function UserPage() {
   const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [form] = Form.useForm();
@@ -27,11 +30,18 @@ function ProfilePage() {
   const navigate = useNavigate();
 
   const fetchUserById = async () => {
-    if (id) {
-      const data = await getUserById(id);
-      setUser(data);
-    } else {
-      console.error('ID пользователя не найден');
+    try {
+      if (id) {
+        const data = await getUserById(id);
+        setUser(data);
+      } else {
+        console.error('ID пользователя не найден');
+      }
+    } catch (error: any) {
+      notification.error({
+        message: 'Не удалось загрузить пользователя',
+        description: error.message || 'Неизвестная ошибка',
+      });
     }
   };
 
@@ -65,17 +75,19 @@ function ProfilePage() {
     },
   ];
 
-  function onFieldsChange() {}
-
   async function onFinish() {
-    if (!id) {
-      console.error('ID пользователя не найден');
-      return;
+    try {
+      if (!id) {
+        console.error('ID пользователя не найден');
+        return;
+      }
+      const changedFields = form.getFieldsValue(true, (meta) => meta.touched);
+      await updateUser(id, changedFields);
+      await fetchUserById();
+      setIsEditing(false);
+    } catch (error) {
+      notification
     }
-    const changedFields = form.getFieldsValue(true, (meta) => meta.touched);
-    await updateUser(id, changedFields);
-    await fetchUserById();
-    setIsEditing(false);
   }
 
   function handleCancelEdit() {
@@ -103,7 +115,6 @@ function ProfilePage() {
           <Form
             form={form}
             name="taksItemForm"
-            onFieldsChange={onFieldsChange}
             onFinish={onFinish}
             colon={false}>
             <Form.Item
@@ -149,7 +160,7 @@ function ProfilePage() {
               rules={[
                 { message: 'Введите номер телефона!' },
                 {
-                  pattern: /^\+\d{11}$/,
+                  pattern: PHONE_REGEX,
                   message: 'Номер в формате +79991234567',
                 },
               ]}>
@@ -177,4 +188,4 @@ function ProfilePage() {
     </>
   );
 }
-export default ProfilePage;
+export default UserPage;

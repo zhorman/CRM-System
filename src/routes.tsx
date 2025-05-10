@@ -7,9 +7,9 @@ import AuthLayout from './layouts/AuthLayout';
 import LoginForm from './components/AuthForm/LoginForm';
 import RegisterForm from './components/RegistrationForm/RegisterForm';
 import UsersPage from './pages/UsersPage';
-import UserProfilePage from './pages/UserProfilePage';
+import UserPage from './pages/UserPage';
 
-const adminLoader = async () => {
+const adminOrModeratorLoader = async () => {
   const state = store.getState();
   const user = state.user.userData;
   if (
@@ -53,11 +53,12 @@ const router = createBrowserRouter([
       {
         path: 'users',
         element: <UsersPage />,
-        loader: adminLoader,
+        loader: adminOrModeratorLoader,
       },
       {
         path: 'users/:id',
-        element: <UserProfilePage />,
+        element: <UserPage />,
+        loader: adminOrModeratorLoader,
       },
     ],
   },

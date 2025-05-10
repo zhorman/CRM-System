@@ -22,7 +22,7 @@ export async function getUserById(id: string) {
     return response.data;
   } catch (error) {
     console.error('Ошибка getUser:', error);
-    return null;
+    throw error;
   }
 }
 
@@ -33,7 +33,7 @@ export async function blockUserById(id: string) {
     return response.data;
   } catch (error) {
     console.error('Ошибка blockUser:', error);
-    return null;
+    throw error;
   }
 }
 
@@ -44,34 +44,23 @@ export async function unblockUserById(id: string) {
     return response.data;
   } catch (error) {
     console.error('Ошибка unblockUser:', error);
-    return null;
+    throw error;
   }
 }
 
-export async function getUsers() {
-  try {
-    const response = await api.get('/admin/users');
-
-    console.log('Ответ сервера getUsers:', response);
-    return response.data;
-  } catch (error) {
-    console.error('Ошибка getUser:', error);
-    return null;
-  }
-}
-export async function getFilteredUsers(userFilters: UserFilters) {
+export async function getUsers(userFilters: UserFilters | null) {
   try {
     const response = await api.get('/admin/users', {
       params: {
-        search: userFilters.search || undefined,
-        sortBy: userFilters.sortBy || undefined,
-        sortOrder: userFilters.sortOrder || undefined,
+        search: userFilters?.search || undefined,
+        sortBy: userFilters?.sortBy || undefined,
+        sortOrder: userFilters?.sortOrder || undefined,
         isBlocked:
-          userFilters.isBlocked !== undefined
+          userFilters?.isBlocked !== undefined
             ? userFilters.isBlocked
             : undefined,
-        offset: userFilters.offset || 0,
-        limit: userFilters.limit || 20,
+        offset: userFilters?.offset || 0,
+        limit: userFilters?.limit || 20,
       },
     });
 
@@ -79,23 +68,7 @@ export async function getFilteredUsers(userFilters: UserFilters) {
     return response.data;
   } catch (error) {
     console.error('Ошибка getUser:', error);
-    return null;
-  }
-}
-
-export async function searchUsers(query: string) {
-  try {
-    const response = await api.get(`/admin/users`, {
-      params: {
-        search: query || undefined,
-      },
-    });
-
-    console.log('Ответ сервера searchUsers:', response);
-    return response.data;
-  } catch (error) {
-    console.error('Ошибка searchUsers:', error);
-    return null;
+    throw error;
   }
 }
 
@@ -105,7 +78,7 @@ export async function updateUser(id: string, updatedUser: UserRequest) {
     return response.data;
   } catch (error) {
     console.error('Ошибка updateUser:', error);
-    return null;
+    throw error;
   }
 }
 export async function updateUserRoles(
@@ -130,6 +103,6 @@ export async function deleteUser(id: string) {
     return response.data;
   } catch (error) {
     console.error('Ошибка deleteUser:', error);
-    return null;
+    throw error;
   }
 }

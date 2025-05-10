@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import { Outlet, Navigate } from 'react-router';
 import MainNavigation from '../components/MainNavigation/MainNavigation';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { getTasks } from '../api/todoApi';
 import { fetchUser } from '../store/userSlice';
 
 import { Layout, Spin } from 'antd';
 import { setAuthorized } from '../store/authSlice';
-import { TaskFilters } from '../types/todos';
 const { Header, Footer, Sider, Content } = Layout;
 
 function RootLayout() {
@@ -20,7 +18,6 @@ function RootLayout() {
     const initAuth = async () => {
       try {
         console.log('запрос прав');
-        await getTasks(TaskFilters.All);
         await dispatch(fetchUser());
         dispatch(setAuthorized(true));
       } catch (e) {

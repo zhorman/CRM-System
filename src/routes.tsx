@@ -8,13 +8,14 @@ import LoginForm from './components/AuthForm/LoginForm';
 import RegisterForm from './components/RegistrationForm/RegisterForm';
 import UsersPage from './pages/UsersPage';
 import UserPage from './pages/UserPage';
+import { Roles } from './types/admin';
 
 const adminOrModeratorLoader = async () => {
   const state = store.getState();
   const user = state.user.userData;
   if (
     !user ||
-    (!user.roles.includes('ADMIN') && !user.roles.includes('MODERATOR'))
+    (!user.roles.includes(Roles.ADMIN) && !user.roles.includes(Roles.MODERATOR))
   ) {
     return redirect('/');
   }

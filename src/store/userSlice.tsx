@@ -1,16 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getUser } from '../api/usersApi';
-import { Role } from '../types/user';
+import { User } from '../types/admin';
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  date: string;
-  isBlocked: false;
-  roles: Role[];
-  phoneNumber: string;
-}
 
 interface UserState {
   userData: User | null;

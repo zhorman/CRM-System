@@ -60,7 +60,7 @@ const UsersTable = () => {
   const [editingUserId, setEditingUserId] = useState<string>('');
   const [editingRoles, setEditingRoles] = useState<Roles[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const isAdmin = user && user.roles.includes('ADMIN');
+  const isAdmin = user && user.roles.includes(Roles.ADMIN);
 
   const roleOptions = [Roles.ADMIN, Roles.MODERATOR, Roles.USER];
 

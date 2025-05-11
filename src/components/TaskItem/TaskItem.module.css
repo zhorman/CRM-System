@@ -1,0 +1,15 @@
+.listItem {
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.nameDone {
+  text-decoration: line-through;
+  color: #a0a1a5;
+}
+
+.editForm {
+  display: flex;
+  gap: 10px;
+  
+}

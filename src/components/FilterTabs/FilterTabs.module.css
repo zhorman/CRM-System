@@ -1,0 +1,10 @@
+.tabButton {
+  font-weight: bold;
+  color: #a0a1a5;
+}
+
+.activeTab {
+  font-weight: bold;
+  color: #2aa7dc;
+  text-decoration: underline;
+}

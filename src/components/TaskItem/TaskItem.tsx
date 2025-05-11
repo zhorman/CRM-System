@@ -26,8 +26,6 @@ const TaskItem = React.memo(function TaskItem({
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(task.isDone);
 
-  console.log('Rendering Task:', task.id);
-
   async function handleSubmitForm(values: FormValues) {
     await updateTask(task.id, {
       title: values.taskName,

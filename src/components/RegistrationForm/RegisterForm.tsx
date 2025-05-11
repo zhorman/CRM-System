@@ -12,6 +12,7 @@ import {
 } from '../../utils/constants';
 
 import { Typography, Button, Form, Input, notification } from 'antd';
+import { PHONE_REGEX } from '../../utils/constants';
 
 const { Paragraph } = Typography;
 
@@ -170,7 +171,7 @@ function RegisterForm() {
         rules={[
           { message: 'Введите номер телефона!' },
           {
-            pattern: /^\+\d{11}$/,
+            pattern: PHONE_REGEX,
             message: 'Номер в формате +79991234567',
           },
         ]}>

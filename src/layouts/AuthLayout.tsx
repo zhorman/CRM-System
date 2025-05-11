@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Row, Col } from 'antd';
-import loginImg from '../assets/illustration.svg';
+import authImg from '../assets/authimg.png';
 import { Outlet } from 'react-router';
 import { useMatch } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ function AuthLayout() {
   return (
     <Row style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <Col span={14}>
-        <img src={loginImg} width="100%" />
+        <img src={authImg} width="100%" />
       </Col>
       <Col
         span={10}

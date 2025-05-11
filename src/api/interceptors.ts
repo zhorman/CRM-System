@@ -7,8 +7,6 @@ import { api } from './apiClient';
 export const setupInterceptors = (dispatch: Dispatch) => {
   api.interceptors.request.use((config) => {
     const accessToken = tokenManager.get();
-    console.log('request interceptor', config);
-    console.log('request interceptor accessToken', accessToken);
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -19,7 +17,6 @@ export const setupInterceptors = (dispatch: Dispatch) => {
 
   api.interceptors.response.use(
     (response) => {
-      console.log('Response:', response.status, response.data);
       return response;
     },
     async (error) => {
@@ -27,16 +24,11 @@ export const setupInterceptors = (dispatch: Dispatch) => {
       const refreshToken = localStorage.getItem('refreshToken');
       const delay = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms));
-      console.log('ответ - ошибка originalResponse', originalResponse);
 
       if (error.response?.status === 401 && !originalResponse._retry) {
         originalResponse._retry = true;
 
         try {
-          console.log(
-            'Интерцептор response старт, refreshToken - ',
-            refreshToken
-          );
           await delay(1000);
           const response = await axios.post(
             'https://easydev.club/api/v1/auth/refresh',
@@ -44,18 +36,17 @@ export const setupInterceptors = (dispatch: Dispatch) => {
               refreshToken,
             }
           );
-          console.log('Ответ интерцептор response api.post', response.data);
 
           const { accessToken, refreshToken: newRefreshToken } = response.data;
 
-          dispatch(setTokens({ accessToken, refreshToken: newRefreshToken }));
+          dispatch(setTokens({ refreshToken: newRefreshToken }));
           tokenManager.set(accessToken);
           localStorage.setItem('refreshToken', newRefreshToken);
 
           originalResponse.headers.Authorization = `Bearer ${accessToken}`;
           return api(originalResponse);
         } catch (error) {
-          console.log('Error!:', error);
+          console.log('Не удалось обновить ацесс токен', error);
           dispatch(logout());
           tokenManager.clear();
           return Promise.reject(error);

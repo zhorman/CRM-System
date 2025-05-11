@@ -1,8 +1,5 @@
-import { getUser } from '../api/usersApi';
-import { useAppDispatch } from '../store/hooks';
-import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/authSlice';
-import { ProfileResponse } from '../types/user';
 
 import {
   Card,
@@ -14,23 +11,8 @@ import {
 } from 'antd';
 
 function ProfilePage() {
-  const [user, setUser] = useState<ProfileResponse | null>(null);
-
+  const user = useAppSelector((state) => state.user.userData);
   const dispatch = useAppDispatch();
-
-  const fetchUserData = async () => {
-    try {
-      const data = await getUser();
-      setUser(data);
-    } catch (error) {
-      console.log('ошибка fetchUserData', error);
-    }
-  };
-
-  useEffect(() => {
-    console.log('Монтируется профиль', user);
-    fetchUserData();
-  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -38,11 +20,14 @@ function ProfilePage() {
 
   if (!user) {
     return (
-      <Card>
-        <Spin tip="Loading">
-          <p />
-        </Spin>
-      </Card>
+      <>
+        <Card>
+          <Spin tip="Loading">
+            <p />
+          </Spin>
+        </Card>
+        <Button onClick={handleLogout}>Logout</Button>
+      </>
     );
   }
 

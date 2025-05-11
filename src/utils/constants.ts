@@ -12,3 +12,5 @@ export const MAX_PASSWORD_LENGTH = 60;
 
 export const REFRESH_TOKEN_LIFETIME = 12 * 60 * 60 * 1000;
 export const ACCESS_TOKEN_LIFETIME = 3 * 60 * 1000;
+
+export const PHONE_REGEX = /^\+\d{11}$/;

@@ -4,6 +4,7 @@ function createTokenManager() {
   return {
     set(token: string) {
       accessToken = token;
+      console.log('acess token', accessToken)
     },
     get() {
       return accessToken;
